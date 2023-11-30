@@ -92,7 +92,13 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
 
     const anchorPos = doc.positionAt(openingParenOffset + 1);
     const activePos = doc.positionAt(closingParenOffset);
-    return new vscode.Selection(anchorPos, activePos);
+    const newSel = new vscode.Selection(anchorPos, activePos);
+    if (newSel.start !== sel.start || newSel.end !== sel.end) {
+        return newSel;
+    }
+
+    // TODO expand again
+    throw Error("should expand again");
 }
 
 export function selectArg() {
