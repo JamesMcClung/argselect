@@ -15,7 +15,8 @@
     "commands": [
       {
         "command": "argselect.helloWorld",
-        "title": "Hello World"
+        "title": "Hello World",
+        "category": "ArgSelect"
       }
     ],
     "keybindings": [
