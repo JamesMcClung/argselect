@@ -10,17 +10,33 @@ const QUOTES = ["'", '"'];
 const DELIMS = [","];
 const WHITESPACE = [" ", "\t", "\n"];
 
+type TraverseParams = {
+    startIsInString?: boolean,
+};
+type TraverseParamsConcrete = {
+    startIsInString: boolean,
+};
+function concretizeTraverseParams(params: TraverseParams | undefined): TraverseParamsConcrete {
+    return { startIsInString: false, ...params };
+}
 
-function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 1 | -1, inString: boolean = false): number | undefined {
+function traverseUntilUnmatchedParen(
+    text: string,
+    startingOffset: number,
+    dir: 1 | -1,
+    paramsUninit?: TraverseParams
+): number | undefined {
+    const params = concretizeTraverseParams(paramsUninit);
+
     const openers = dir === 1 ? OPENING_PARENS : CLOSING_PARENS;
     const closers = dir === 1 ? CLOSING_PARENS : OPENING_PARENS;
 
     let nestedOpens: string[] = [];
     let lastNonSpace: number | undefined = undefined;
 
-    const startedInString = inString;
+    let inString = params.startIsInString;
     const ANY_QUOTE = "aq"; // special signal, since we don't know what the quotes should be
-    if (startedInString) {
+    if (params.startIsInString) {
         nestedOpens.push(ANY_QUOTE);
     }
 
@@ -56,9 +72,9 @@ function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 
             inString = false;
         } else if (inString && char === "\n") {
             // assume raw newlines aren't allowed, so we must have started in a string
-            if (!startedInString) {
+            if (!params.startIsInString) {
                 // nothing to do but restart...
-                return traverseUntilUnmatchedParen(text, startingOffset, dir, true);
+                return traverseUntilUnmatchedParen(text, startingOffset, dir, { ...params, startIsInString: true });
             } else {
                 // ...unless we already tried that, in which case, give up
                 throw Error("sorry, not sure what's goin on with the strings ya got there");
@@ -71,8 +87,8 @@ function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 
     }
     if (inString) {
         // same deal as before, except it's EOF/SOF instead of newlines
-        if (!startedInString) {
-            return traverseUntilUnmatchedParen(text, startingOffset, dir, true);
+        if (!params.startIsInString) {
+            return traverseUntilUnmatchedParen(text, startingOffset, dir, { ...params, startIsInString: true });
         } else {
             throw Error("sorry, not sure what's goin on with the strings ya got there");
         }
