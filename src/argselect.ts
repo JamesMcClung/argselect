@@ -4,9 +4,79 @@ export function helloWorld() {
     vscode.window.showInformationMessage('Hello World 2 from argselect!');
 }
 
+const OPENING_PARENS = ["(", "[", "{"];
+const CLOSING_PARENS = [")", "]", "}"];
+const QUOTES = ["'", '"'];
+
+
+function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 1 | -1, inString: boolean = false): number | undefined {
+    const openers = dir === 1 ? OPENING_PARENS : CLOSING_PARENS;
+    const closers = dir === 1 ? CLOSING_PARENS : OPENING_PARENS;
+
+    let nestedOpens: string[] = [];
+
+    const startedInString = inString;
+    const ANY_QUOTE = "aq"; // special signal, since we don't know what the quotes should be
+    if (startedInString) {
+        nestedOpens.push(ANY_QUOTE);
+    }
+
+    for (let i = startingOffset; i < text.length && i >= 0; i += dir) {
+        const char = text[i];
+        if (!inString && openers.includes(char)) {
+            nestedOpens.push(char);
+        } else if (!inString && closers.includes(char)) {
+            const lastNestedOpen = nestedOpens.pop();
+            if (lastNestedOpen === undefined) {
+                return i;
+            } else if (openers.indexOf(lastNestedOpen) !== closers.indexOf(char)) {
+                throw Error(`mismatched parens: "${lastNestedOpen}" and "${char}"`);
+            }
+        } else if (!inString && QUOTES.includes(char)) {
+            nestedOpens.push(char);
+            inString = true;
+        } else if (inString && char === nestedOpens[nestedOpens.length - 1]
+            || nestedOpens[nestedOpens.length - 1] === ANY_QUOTE && QUOTES.includes(char)) {
+            nestedOpens.pop();
+            inString = false;
+        } else if (inString && char === "\n") {
+            // assume raw newlines aren't allowed, so we must have started in a string
+            if (!startedInString) {
+                // nothing to do but restart...
+                return traverseUntilUnmatchedParen(text, startingOffset, dir, true);
+            } else {
+                // ...unless we already tried that, in which case, give up
+                throw Error("sorry, not sure what's goin on with the strings ya got there");
+            }
+        }
+    }
+    if (inString) {
+        // same deal as before, except it's EOF/SOF instead of newlines
+        if (!startedInString) {
+            return traverseUntilUnmatchedParen(text, startingOffset, dir, true);
+        } else {
+            throw Error("sorry, not sure what's goin on with the strings ya got there");
+        }
+    }
+    return undefined;
+}
+
 function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
-    const anchorPos = doc.lineAt(sel.start.line).range.start;
-    const activePos = doc.lineAt(sel.end.line).range.end;
+    const text = doc.getText();
+    const startOffset = doc.offsetAt(sel.start);
+
+    const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1);
+    if (openingParenOffset === undefined) {
+        return sel;
+    }
+
+    const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1);
+    if (closingParenOffset === undefined) {
+        return sel; // hi jam!
+    }
+
+    const anchorPos = doc.positionAt(openingParenOffset + 1);
+    const activePos = doc.positionAt(closingParenOffset);
     return new vscode.Selection(anchorPos, activePos);
 }
 
