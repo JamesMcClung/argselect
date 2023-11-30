@@ -17,6 +17,14 @@
         "command": "argselect.helloWorld",
         "title": "Hello World"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "argselect.helloWorld",
+        "key": "ctrl+f1",
+        "mac": "cmd+f1",
+        "when": "editorTextFocus"
+      }
     ]
   },
   "scripts": {
