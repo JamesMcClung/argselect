@@ -7,6 +7,8 @@ export function helloWorld() {
 const OPENING_PARENS = ["(", "[", "{"];
 const CLOSING_PARENS = [")", "]", "}"];
 const QUOTES = ["'", '"'];
+const DELIMS = [","];
+const WHITESPACE = [" ", "\t", "\n"];
 
 
 function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 1 | -1, inString: boolean = false): number | undefined {
@@ -14,6 +16,7 @@ function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 
     const closers = dir === 1 ? CLOSING_PARENS : OPENING_PARENS;
 
     let nestedOpens: string[] = [];
+    let lastNonSpace: number | undefined = undefined;
 
     const startedInString = inString;
     const ANY_QUOTE = "aq"; // special signal, since we don't know what the quotes should be
@@ -32,6 +35,18 @@ function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 
             } else if (openers.indexOf(lastNestedOpen) !== closers.indexOf(char)) {
                 throw Error(`mismatched parens: "${lastNestedOpen}" and "${char}"`);
             }
+        } else if (!inString && nestedOpens.length === 0 && DELIMS.includes(char)) {
+            if (lastNonSpace === undefined) {
+                // try searching the other way for a nonspace
+                for (let j = i - dir; j < text.length && j >= 0; j -= dir) {
+                    if (!WHITESPACE.includes(text[j])) {
+                        return j + dir;
+                    }
+                }
+                throw Error(`this comma confuses me`);
+            } else {
+                return lastNonSpace + dir;
+            }
         } else if (!inString && QUOTES.includes(char)) {
             nestedOpens.push(char);
             inString = true;
@@ -48,6 +63,10 @@ function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 
                 // ...unless we already tried that, in which case, give up
                 throw Error("sorry, not sure what's goin on with the strings ya got there");
             }
+        }
+
+        if (!WHITESPACE.includes(char)) {
+            lastNonSpace = i;
         }
     }
     if (inString) {
