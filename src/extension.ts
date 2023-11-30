@@ -12,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "argselect" is now active!');
 
 	context.subscriptions.push(vscode.commands.registerCommand('argselect.helloWorld', argselect.helloWorld));
+	context.subscriptions.push(vscode.commands.registerCommand('argselect.selectArg', argselect.selectArg));
 }
 
 // This method is called when your extension is deactivated
