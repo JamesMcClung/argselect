@@ -82,7 +82,7 @@ function traverseUntilUnmatchedParen(text: string, startingOffset: number, dir: 
 
 function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
     const text = doc.getText();
-    const startOffset = doc.offsetAt(sel.start);
+    const startOffset = doc.offsetAt(sel.active);
 
     const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1);
     if (openingParenOffset === undefined) {
