@@ -85,12 +85,8 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
     const startOffset = doc.offsetAt(sel.active);
 
     const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1);
-    if (openingParenOffset === undefined) {
-        return sel;
-    }
-
     const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1);
-    if (closingParenOffset === undefined) {
+    if (closingParenOffset === undefined || openingParenOffset === undefined) {
         return sel; // hi jam!
     }
 
