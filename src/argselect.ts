@@ -14,14 +14,22 @@ type TraverseParams = {
     startIsInString?: boolean,
     initialNestDepth?: number,
     stopAtDelims?: boolean,
+    includeWhitespace?: boolean,
 };
 type TraverseParamsConcrete = {
     startIsInString: boolean,
     initialNestDepth: number,
     stopAtDelims: boolean,
+    includeWhitespace: boolean,
 };
 function concretizeTraverseParams(params: TraverseParams | undefined): TraverseParamsConcrete {
-    return { startIsInString: false, initialNestDepth: 0, stopAtDelims: true, ...params };
+    return {
+        startIsInString: false,
+        initialNestDepth: 0,
+        stopAtDelims: true,
+        includeWhitespace: false,
+        ...params
+    };
 }
 
 function traverseUntilUnmatchedParen(
@@ -74,6 +82,10 @@ function traverseUntilUnmatchedParen(
     }
 
     if (boundaryOffset !== undefined) {
+        if (params.includeWhitespace) {
+            return boundaryOffset;
+        }
+
         if (lastNonSpace !== undefined) {
             return lastNonSpace + dir; // add dir to return offset of the space
         }
