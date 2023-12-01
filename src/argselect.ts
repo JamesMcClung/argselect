@@ -122,6 +122,7 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
     const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1, { startIsInString });
     const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1, { startIsInString });
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
+        vscode.window.showInformationMessage("ArgSelect: Couldn't find arguments to select");
         return sel; // hi jam!
     }
 
