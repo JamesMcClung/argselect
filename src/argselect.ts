@@ -161,6 +161,7 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
         { startIsInString },
         { startIsInString, includeWhitespace: true },
         { startIsInString, stopAtDelims: false },
+        { startIsInString, includeWhitespace: true, stopAtDelims: false },
     ];
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
