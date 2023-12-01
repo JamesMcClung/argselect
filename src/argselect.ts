@@ -12,12 +12,14 @@ const WHITESPACE = [" ", "\t", "\n"];
 
 type TraverseParams = {
     startIsInString?: boolean,
+    initialNestDepth?: number,
 };
 type TraverseParamsConcrete = {
     startIsInString: boolean,
+    initialNestDepth: number,
 };
 function concretizeTraverseParams(params: TraverseParams | undefined): TraverseParamsConcrete {
-    return { startIsInString: false, ...params };
+    return { startIsInString: false, initialNestDepth: 0, ...params };
 }
 
 function traverseUntilUnmatchedParen(
@@ -31,13 +33,13 @@ function traverseUntilUnmatchedParen(
     const openers = dir === 1 ? OPENING_PARENS : CLOSING_PARENS;
     const closers = dir === 1 ? CLOSING_PARENS : OPENING_PARENS;
 
-    let nestDepth = 0;
+    let nestDepth = params.initialNestDepth;
     let lastNonSpace: number | undefined = undefined;
 
     const ANY_QUOTE = "aq"; // special signal, since we don't know what the quotes should be
     let currentQuote: string | undefined = params.startIsInString ? ANY_QUOTE : undefined;
     if (params.startIsInString) {
-        nestDepth = 1;
+        nestDepth++;
     }
 
     let boundaryOffset: number | undefined = undefined;
