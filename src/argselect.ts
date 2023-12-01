@@ -149,7 +149,7 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
             vscode.window.showInformationMessage("ArgSelect: Nothing to expand selection to");
             return sel;
         }
-        if (!maybeNewSel.isEqual(sel)) {
+        if (!sel.contains(maybeNewSel) && (maybeNewSel.contains(sel) || sel.isEmpty)) {
             return maybeNewSel;
         }
     }
