@@ -72,22 +72,20 @@ function traverseUntilUnmatchedParen(
         }
     }
 
-    if (boundaryOffset === undefined) {
-        return undefined;
-    }
+    if (boundaryOffset !== undefined) {
+        if (lastNonSpace !== undefined) {
+            return lastNonSpace + dir; // add dir to return offset of the space
+        }
 
-    if (lastNonSpace !== undefined) {
-        return lastNonSpace + dir; // add dir to return offset of the space
-    }
-
-    // try backtracking to find a nonspace; might even go past starting position
-    for (let i = boundaryOffset - dir; i < text.length && i >= 0; i -= dir) {
-        if (!WHITESPACE.includes(text[i])) {
-            return i + dir;
+        // try backtracking to find a nonspace; might even go past starting position
+        for (let i = boundaryOffset - dir; i < text.length && i >= 0; i -= dir) {
+            if (!WHITESPACE.includes(text[i])) {
+                return i + dir;
+            }
         }
     }
 
-    throw Error("couldn't find anything to select");
+    return undefined;
 }
 
 function isInString(text: string, offset: number): boolean {
