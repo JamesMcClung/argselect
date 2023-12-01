@@ -160,17 +160,18 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
         { startIsInString },
         { startIsInString, includeWhitespace: true },
         { startIsInString, stopAtDelims: false },
-        { startIsInString, initialNestDepth: 1 },
     ];
 
-    for (let paramAttempt of paramAttempts) {
-        let maybeNewSel = expandSelection(doc, sel, paramAttempt);
-        if (maybeNewSel === undefined) {
-            vscode.window.showInformationMessage("ArgSelect: Nothing to expand selection to");
-            return sel;
-        }
-        if (!sel.contains(maybeNewSel) && (maybeNewSel.contains(sel) || sel.isEmpty)) {
-            return maybeNewSel;
+    for (let initialNestDepth = 0; ; initialNestDepth++) {
+        for (let paramAttempt of paramAttempts) {
+            let maybeNewSel = expandSelection(doc, sel, { ...paramAttempt, initialNestDepth });
+            if (maybeNewSel === undefined) {
+                vscode.window.showInformationMessage("ArgSelect: Nothing to expand selection to");
+                return sel;
+            }
+            if (!sel.contains(maybeNewSel) && (maybeNewSel.contains(sel) || sel.isEmpty)) {
+                return maybeNewSel;
+            }
         }
     }
 
