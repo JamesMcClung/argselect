@@ -150,6 +150,7 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
     const startIsInString = isInString(doc.getText(), doc.offsetAt(sel.active));
     const paramAttempts: TraverseParams[] = [
         { startIsInString },
+        { startIsInString, includeWhitespace: true },
         { startIsInString, stopAtDelims: false },
         { startIsInString, initialNestDepth: 1 },
     ];
