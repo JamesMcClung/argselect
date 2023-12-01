@@ -115,14 +115,14 @@ function isInString(text: string, offset: number): boolean {
     return false;
 }
 
-function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traverseParams: TraverseParams = {}): vscode.Selection {
+function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traverseParams: TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
     const startOffset = doc.offsetAt(sel.active);
 
     const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1, traverseParams);
     const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
-        return sel; // hi jam!
+        return undefined; // hi jam!
     }
 
     const anchorPos = doc.positionAt(openingParenOffset + 1);
@@ -142,9 +142,13 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
         { startIsInString, initialNestDepth: 1 },
     ];
 
-    let maybeNewSel: vscode.Selection;
+    let maybeNewSel: vscode.Selection | undefined;
     for (let paramAttempt of paramAttempts) {
         maybeNewSel = expandSelection(doc, sel, paramAttempt);
+        if (maybeNewSel === undefined) {
+            vscode.window.showInformationMessage("ArgSelect: Nothing to expand selection to");
+            return sel;
+        }
         if (!maybeNewSel.isEqual(sel)) {
             return maybeNewSel;
         }
