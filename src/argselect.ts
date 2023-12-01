@@ -119,14 +119,9 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traver
     const text = doc.getText();
     const startOffset = doc.offsetAt(sel.active);
 
-    if (traverseParams.startIsInString === undefined) {
-        traverseParams.startIsInString = isInString(text, startOffset);
-    }
-
     const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1, traverseParams);
     const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
-        vscode.window.showInformationMessage("ArgSelect: Couldn't find arguments to select");
         return sel; // hi jam!
     }
 
@@ -136,13 +131,25 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traver
     if (newSel.isReversed) {
         throw Error("oops, reversed selection");
     }
-    if (!newSel.isEqual(sel)) {
-        return newSel;
+    return newSel;
+}
+
+function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
+    const startIsInString = isInString(doc.getText(), doc.offsetAt(sel.active));
+    const paramAttempts: TraverseParams[] = [
+        { startIsInString },
+        { startIsInString, stopAtDelims: false },
+        { startIsInString, initialNestDepth: 1 },
+    ];
+
+    let maybeNewSel: vscode.Selection;
+    for (let paramAttempt of paramAttempts) {
+        maybeNewSel = expandSelection(doc, sel, paramAttempt);
+        if (!maybeNewSel.isEqual(sel)) {
+            return maybeNewSel;
+        }
     }
 
-    if (traverseParams.initialNestDepth ?? 0 === 0) {
-        return expandSelection(doc, sel, { ...traverseParams, initialNestDepth: 1 });
-    }
     vscode.window.showInformationMessage("ArgSelect: Couldn't expand selection");
     return sel;
 }
@@ -154,5 +161,5 @@ export function selectArg() {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
+    editor.selections = editor.selections.map(sel => expandSelectionDispatcher(editor.document, sel));
 }
