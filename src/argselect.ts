@@ -31,39 +31,36 @@ function traverseUntilUnmatchedParen(
     const openers = dir === 1 ? OPENING_PARENS : CLOSING_PARENS;
     const closers = dir === 1 ? CLOSING_PARENS : OPENING_PARENS;
 
-    let nestedOpens: string[] = [];
+    let nestDepth = 0;
     let lastNonSpace: number | undefined = undefined;
 
-    let inString = params.startIsInString;
     const ANY_QUOTE = "aq"; // special signal, since we don't know what the quotes should be
+    let currentQuote: string | undefined = params.startIsInString ? ANY_QUOTE : undefined;
     if (params.startIsInString) {
-        nestedOpens.push(ANY_QUOTE);
+        nestDepth = 1;
     }
 
     let boundaryOffset: number | undefined = undefined;
     for (let i = startingOffset; i < text.length && i >= 0; i += dir) {
         const char = text[i];
-        if (!inString && openers.includes(char)) {
-            nestedOpens.push(char);
-        } else if (!inString && closers.includes(char)) {
-            const lastNestedOpen = nestedOpens.pop();
-            if (lastNestedOpen === undefined) {
+        if (currentQuote === undefined && openers.includes(char)) {
+            nestDepth++;
+        } else if (currentQuote === undefined && closers.includes(char)) {
+            if (nestDepth === 0) {
                 boundaryOffset = i;
                 break;
-            } else if (openers.indexOf(lastNestedOpen) !== closers.indexOf(char)) {
-                throw Error(`mismatched parens: "${lastNestedOpen}" and "${char}"`);
             }
-        } else if (!inString && nestedOpens.length === 0 && DELIMS.includes(char)) {
+            nestDepth--;
+        } else if (currentQuote === undefined && nestDepth === 0 && DELIMS.includes(char)) {
             boundaryOffset = i;
             break;
-        } else if (!inString && QUOTES.includes(char)) {
-            nestedOpens.push(char);
-            inString = true;
-        } else if (inString && char === nestedOpens[nestedOpens.length - 1]
-            || nestedOpens[nestedOpens.length - 1] === ANY_QUOTE && QUOTES.includes(char)) {
-            nestedOpens.pop();
-            inString = false;
-        } else if (inString && char === "\n") {
+        } else if (currentQuote === undefined && QUOTES.includes(char)) {
+            nestDepth++;
+            currentQuote = char;
+        } else if (char === currentQuote || currentQuote === ANY_QUOTE && QUOTES.includes(char)) {
+            nestDepth--;
+            currentQuote = undefined;
+        } else if (currentQuote !== undefined && char === "\n") {
             throw Error("sorry, not sure what's goin on with the strings ya got there");
         }
 
