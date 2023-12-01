@@ -113,13 +113,16 @@ function isInString(text: string, offset: number): boolean {
     return false;
 }
 
-function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, initialNestDepth: number = 0): vscode.Selection {
+function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traverseParams: TraverseParams = {}): vscode.Selection {
     const text = doc.getText();
     const startOffset = doc.offsetAt(sel.active);
-    const startIsInString = isInString(text, startOffset);
 
-    const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1, { startIsInString, initialNestDepth });
-    const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1, { startIsInString, initialNestDepth });
+    if (traverseParams.startIsInString === undefined) {
+        traverseParams.startIsInString = isInString(text, startOffset);
+    }
+
+    const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1, traverseParams);
+    const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
         vscode.window.showInformationMessage("ArgSelect: Couldn't find arguments to select");
         return sel; // hi jam!
@@ -135,8 +138,8 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, initia
         return newSel;
     }
 
-    if (initialNestDepth === 0) {
-        return expandSelection(doc, sel, 1);
+    if (traverseParams.initialNestDepth ?? 0 === 0) {
+        return expandSelection(doc, sel, { ...traverseParams, initialNestDepth: 1 });
     }
     vscode.window.showInformationMessage("ArgSelect: Couldn't expand selection");
     return sel;
