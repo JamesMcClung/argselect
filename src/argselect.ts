@@ -130,7 +130,7 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
     const anchorPos = doc.positionAt(openingParenOffset + 1);
     const activePos = doc.positionAt(closingParenOffset);
     const newSel = new vscode.Selection(anchorPos, activePos);
-    if (newSel.start !== sel.start || newSel.end !== sel.end) {
+    if (!newSel.isEqual(sel)) {
         return newSel;
     }
 
