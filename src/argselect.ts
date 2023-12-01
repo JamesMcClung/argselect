@@ -40,6 +40,7 @@ function traverseUntilUnmatchedParen(
         nestedOpens.push(ANY_QUOTE);
     }
 
+    let boundaryOffset: number | undefined = undefined;
     for (let i = startingOffset; i < text.length && i >= 0; i += dir) {
         const char = text[i];
         if (!inString && openers.includes(char)) {
@@ -47,22 +48,14 @@ function traverseUntilUnmatchedParen(
         } else if (!inString && closers.includes(char)) {
             const lastNestedOpen = nestedOpens.pop();
             if (lastNestedOpen === undefined) {
-                return i;
+                boundaryOffset = i;
+                break;
             } else if (openers.indexOf(lastNestedOpen) !== closers.indexOf(char)) {
                 throw Error(`mismatched parens: "${lastNestedOpen}" and "${char}"`);
             }
         } else if (!inString && nestedOpens.length === 0 && DELIMS.includes(char)) {
-            if (lastNonSpace === undefined) {
-                // try searching the other way for a nonspace
-                for (let j = i - dir; j < text.length && j >= 0; j -= dir) {
-                    if (!WHITESPACE.includes(text[j])) {
-                        return j + dir;
-                    }
-                }
-                throw Error(`this comma confuses me`);
-            } else {
-                return lastNonSpace + dir;
-            }
+            boundaryOffset = i;
+            break;
         } else if (!inString && QUOTES.includes(char)) {
             nestedOpens.push(char);
             inString = true;
@@ -78,7 +71,23 @@ function traverseUntilUnmatchedParen(
             lastNonSpace = i;
         }
     }
-    return undefined;
+
+    if (boundaryOffset === undefined) {
+        return undefined;
+    }
+
+    if (lastNonSpace !== undefined) {
+        return lastNonSpace + dir; // add dir to return offset of the space
+    }
+
+    // try backtracking to find a nonspace; might even go past starting position
+    for (let i = boundaryOffset - dir; i < text.length && i >= 0; i -= dir) {
+        if (!WHITESPACE.includes(text[i])) {
+            return i + dir;
+        }
+    }
+
+    throw Error("couldn't find anything to select");
 }
 
 function isInString(text: string, offset: number): boolean {
