@@ -131,10 +131,18 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traver
     const text = doc.getText();
     const startOffset = doc.offsetAt(sel.active);
 
-    const openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1, traverseParams);
-    const closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
+    let openingParenOffset = traverseUntilUnmatchedParen(text, startOffset - 1, -1, traverseParams);
+    let closingParenOffset = traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
         return undefined; // hi jam!
+    }
+
+    if (traverseParams.includeWhitespace) {
+        if (DELIMS.includes(text[closingParenOffset])) {
+            closingParenOffset += 1;
+        } else if (DELIMS.includes(text[openingParenOffset])) {
+            openingParenOffset -= 1;
+        }
     }
 
     const anchorPos = doc.positionAt(openingParenOffset + 1);
