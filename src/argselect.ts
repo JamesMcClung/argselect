@@ -174,9 +174,6 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
             }
         }
     }
-
-    vscode.window.showInformationMessage("ArgSelect: Couldn't expand selection");
-    return sel;
 }
 
 export function selectArg() {
