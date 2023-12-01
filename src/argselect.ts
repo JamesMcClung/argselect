@@ -13,13 +13,15 @@ const WHITESPACE = [" ", "\t", "\n"];
 type TraverseParams = {
     startIsInString?: boolean,
     initialNestDepth?: number,
+    stopAtDelims?: boolean,
 };
 type TraverseParamsConcrete = {
     startIsInString: boolean,
     initialNestDepth: number,
+    stopAtDelims: boolean,
 };
 function concretizeTraverseParams(params: TraverseParams | undefined): TraverseParamsConcrete {
-    return { startIsInString: false, initialNestDepth: 0, ...params };
+    return { startIsInString: false, initialNestDepth: 0, stopAtDelims: true, ...params };
 }
 
 function traverseUntilUnmatchedParen(
@@ -53,7 +55,7 @@ function traverseUntilUnmatchedParen(
                 break;
             }
             nestDepth--;
-        } else if (currentQuote === undefined && nestDepth === 0 && DELIMS.includes(char)) {
+        } else if (params.stopAtDelims && currentQuote === undefined && nestDepth === 0 && DELIMS.includes(char)) {
             boundaryOffset = i;
             break;
         } else if (currentQuote === undefined && QUOTES.includes(char)) {
