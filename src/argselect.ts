@@ -149,7 +149,8 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traver
     const activePos = doc.positionAt(closingParenOffset);
     const newSel = new vscode.Selection(anchorPos, activePos);
     if (newSel.isReversed) {
-        throw Error("oops, reversed selection");
+        // happens when selecting pure whitespace as an arg
+        return new vscode.Selection(activePos, anchorPos);
     }
     return newSel;
 }
