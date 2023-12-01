@@ -71,26 +71,11 @@ function traverseUntilUnmatchedParen(
             nestedOpens.pop();
             inString = false;
         } else if (inString && char === "\n") {
-            // assume raw newlines aren't allowed, so we must have started in a string
-            if (!params.startIsInString) {
-                // nothing to do but restart...
-                return traverseUntilUnmatchedParen(text, startingOffset, dir, { ...params, startIsInString: true });
-            } else {
-                // ...unless we already tried that, in which case, give up
-                throw Error("sorry, not sure what's goin on with the strings ya got there");
-            }
+            throw Error("sorry, not sure what's goin on with the strings ya got there");
         }
 
         if (!WHITESPACE.includes(char)) {
             lastNonSpace = i;
-        }
-    }
-    if (inString) {
-        // same deal as before, except it's EOF/SOF instead of newlines
-        if (!params.startIsInString) {
-            return traverseUntilUnmatchedParen(text, startingOffset, dir, { ...params, startIsInString: true });
-        } else {
-            throw Error("sorry, not sure what's goin on with the strings ya got there");
         }
     }
     return undefined;
