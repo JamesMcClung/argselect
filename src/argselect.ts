@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as util from './util';
 
 export function helloWorld() {
     vscode.window.showInformationMessage('Hello World 2 from argselect!');
@@ -11,20 +12,20 @@ const DELIMS = [","];
 const WHITESPACE = [" ", "\t", "\n"];
 
 type TraverseParams = {
-    startIsInString?: boolean,
+    currentStringType?: string | undefined,
     initialNestDepth?: number,
     stopAtDelims?: boolean,
     includeWhitespace?: boolean,
 };
 type TraverseParamsConcrete = {
-    startIsInString: boolean,
+    currentStringType: string | undefined,
     initialNestDepth: number,
     stopAtDelims: boolean,
     includeWhitespace: boolean,
 };
 function concretizeTraverseParams(params: TraverseParams | undefined): TraverseParamsConcrete {
     return {
-        startIsInString: false,
+        currentStringType: undefined,
         initialNestDepth: 0,
         stopAtDelims: true,
         includeWhitespace: false,
@@ -46,34 +47,30 @@ function traverseUntilUnmatchedParen(
     let nestDepth = params.initialNestDepth;
     let lastNonSpace: number | undefined = undefined;
 
-    const ANY_QUOTE = "aq"; // special signal, since we don't know what the quotes should be
-    let currentQuote: string | undefined = params.startIsInString ? ANY_QUOTE : undefined;
-    if (params.startIsInString) {
-        nestDepth++;
+    if (params.currentStringType !== undefined) {
+        startingOffset = util.traverseUntilOutOfString(text, startingOffset, dir, params.currentStringType)!;
     }
 
     let boundaryOffset: number | undefined = undefined;
     for (let i = startingOffset; i < text.length && i >= 0; i += dir) {
         const char = text[i];
-        if (currentQuote === undefined && openers.includes(char)) {
+        if (openers.includes(char)) {
             nestDepth++;
-        } else if (currentQuote === undefined && closers.includes(char)) {
+        } else if (closers.includes(char)) {
             if (nestDepth === 0) {
                 boundaryOffset = i;
                 break;
             }
             nestDepth--;
-        } else if (params.stopAtDelims && currentQuote === undefined && nestDepth === 0 && DELIMS.includes(char)) {
+        } else if (params.stopAtDelims && nestDepth === 0 && DELIMS.includes(char)) {
             boundaryOffset = i;
             break;
-        } else if (currentQuote === undefined && QUOTES.includes(char)) {
-            nestDepth++;
-            currentQuote = char;
-        } else if (char === currentQuote || currentQuote === ANY_QUOTE && QUOTES.includes(char)) {
-            nestDepth--;
-            currentQuote = undefined;
-        } else if (currentQuote !== undefined && char === "\n") {
-            throw Error("sorry, not sure what's goin on with the strings ya got there");
+        } else if (QUOTES.includes(char)) {
+            const stringExit = util.traverseUntilOutOfString(text, i + dir, dir, char);
+            if (stringExit === undefined) {
+                throw Error("couldn't figure out this string");
+            }
+            i = stringExit;
         }
 
         if (!WHITESPACE.includes(char)) {
@@ -156,12 +153,12 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traver
 }
 
 function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
-    const startIsInString = isInString(doc.getText(), doc.offsetAt(sel.active));
+    const currentStringType = util.getCurrentStringType(doc.getText(), doc.offsetAt(sel.active));
     const paramAttempts: TraverseParams[] = [
-        { startIsInString },
-        { startIsInString, includeWhitespace: true },
-        { startIsInString, stopAtDelims: false },
-        { startIsInString, includeWhitespace: true, stopAtDelims: false },
+        { currentStringType },
+        { currentStringType, includeWhitespace: true },
+        { currentStringType, stopAtDelims: false },
+        { currentStringType, includeWhitespace: true, stopAtDelims: false },
     ];
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
