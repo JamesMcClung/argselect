@@ -17,7 +17,7 @@ export function traverseUntilOutOfString(text: string, startOffset: number, dir:
         const char = text[i];
         if (isEscaped(text, i)) {
             continue;
-        } else if (char === "\n") {
+        } else if (CHARS_NOT_IN_STRINGS.includes(char)) {
             // assume strings can't contain raw newlines
             break;
         } else if (char === startQuote) {
