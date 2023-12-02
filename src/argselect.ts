@@ -98,32 +98,6 @@ function traverseUntilUnmatchedParen(
     return undefined;
 }
 
-function isInString(text: string, offset: number): boolean {
-    let currentQuote: string | undefined = undefined;
-    for (let dir of [-1, 1]) {
-        for (let i = offset; i < text.length && i >= 0; i += dir) {
-            const char = text[i];
-            if (currentQuote === undefined && QUOTES.includes(char)) {
-                currentQuote = char;
-            } else if (currentQuote === char) {
-                currentQuote = undefined;
-            } else if (char === "\n") {
-                // assume strings don't contain raw newlines
-                if (currentQuote === undefined) {
-                    break;
-                } else {
-                    return true;
-                }
-            }
-        }
-        if (currentQuote !== undefined) {
-            // got to EOF/SOF without closing the quote
-            return true;
-        }
-    }
-    return false;
-}
-
 function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traverseParams: TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
     const startOffset = doc.offsetAt(sel.active);
