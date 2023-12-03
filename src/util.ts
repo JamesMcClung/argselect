@@ -1,3 +1,7 @@
+const OPENING_PARENS = ["(", "[", "{"];
+const CLOSING_PARENS = [")", "]", "}"];
+const DELIMS = [","];
+const WHITESPACE = [" ", "\t", "\n"];
 const QUOTES = ["'", '"'];
 const CHARS_NOT_IN_STRINGS = ["\n"];
 
@@ -69,4 +73,91 @@ export function getCurrentStringType(text: string, offset: number, dir?: -1 | 1)
     }
 
     return currentStringType;
+}
+
+export type TraverseParams = {
+    currentStringType?: string | undefined,
+    initialNestDepth?: number,
+    stopAtDelims?: boolean,
+    includeWhitespace?: boolean,
+};
+type TraverseParamsConcrete = {
+    currentStringType: string | undefined,
+    initialNestDepth: number,
+    stopAtDelims: boolean,
+    includeWhitespace: boolean,
+};
+function concretizeTraverseParams(params: TraverseParams | undefined): TraverseParamsConcrete {
+    return {
+        currentStringType: undefined,
+        initialNestDepth: 0,
+        stopAtDelims: true,
+        includeWhitespace: false,
+        ...params
+    };
+}
+
+export function traverseUntilUnmatchedParen(
+    text: string,
+    startingOffset: number,
+    dir: 1 | -1,
+    paramsUninit?: TraverseParams
+): number | undefined {
+    const params = concretizeTraverseParams(paramsUninit);
+
+    const openers = dir === 1 ? OPENING_PARENS : CLOSING_PARENS;
+    const closers = dir === 1 ? CLOSING_PARENS : OPENING_PARENS;
+
+    let nestDepth = params.initialNestDepth;
+    let lastNonSpace: number | undefined = undefined;
+
+    if (params.currentStringType !== undefined) {
+        startingOffset = traverseUntilOutOfString(text, startingOffset, dir, params.currentStringType)!;
+    }
+
+    let boundaryOffset: number | undefined = undefined;
+    for (let i = startingOffset; i < text.length && i >= 0; i += dir) {
+        const char = text[i];
+        if (openers.includes(char)) {
+            nestDepth++;
+        } else if (closers.includes(char)) {
+            if (nestDepth === 0) {
+                boundaryOffset = i;
+                break;
+            }
+            nestDepth--;
+        } else if (params.stopAtDelims && nestDepth === 0 && DELIMS.includes(char)) {
+            boundaryOffset = i;
+            break;
+        } else if (QUOTES.includes(char)) {
+            const stringExit = traverseUntilOutOfString(text, i + dir, dir, char);
+            if (stringExit === undefined) {
+                throw Error("couldn't figure out this string");
+            }
+            i = stringExit;
+        }
+
+        if (!WHITESPACE.includes(char)) {
+            lastNonSpace = i;
+        }
+    }
+
+    if (boundaryOffset !== undefined) {
+        if (params.includeWhitespace) {
+            return boundaryOffset;
+        }
+
+        if (lastNonSpace !== undefined) {
+            return lastNonSpace + dir; // add dir to return offset of the space
+        }
+
+        // try backtracking to find a nonspace; might even go past starting position
+        for (let i = boundaryOffset - dir; i < text.length && i >= 0; i -= dir) {
+            if (!WHITESPACE.includes(text[i])) {
+                return i + dir;
+            }
+        }
+    }
+
+    return undefined;
 }
