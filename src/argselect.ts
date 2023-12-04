@@ -11,7 +11,7 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traver
     const text = doc.getText();
     const startOffset = doc.offsetAt(sel.active);
 
-    let openingParenOffset = util.traverseUntilUnmatchedParen(text, startOffset - 1, -1, traverseParams);
+    let openingParenOffset = util.traverseUntilUnmatchedParen(text, startOffset, -1, traverseParams);
     let closingParenOffset = util.traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
         return undefined; // hi jam!
