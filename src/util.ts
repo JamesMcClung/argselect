@@ -79,18 +79,21 @@ export type TraverseParams = {
     currentStringType?: string | undefined,
     initialNestDepth?: number,
     stopAtDelims?: boolean,
+    skipDelims?: number,
     includeWhitespace?: boolean,
 };
 type TraverseParamsConcrete = {
     currentStringType: string | undefined,
     initialNestDepth: number,
     stopAtDelims: boolean,
+    skipDelims: number,
     includeWhitespace: boolean,
 };
 function concretizeTraverseParams(params: TraverseParams | undefined): TraverseParamsConcrete {
     return {
         currentStringType: undefined,
         initialNestDepth: 0,
+        skipDelims: 0,
         stopAtDelims: true,
         includeWhitespace: false,
         ...params
@@ -110,6 +113,7 @@ export function traverseUntilUnmatchedParen(
 
     let nestDepth = params.initialNestDepth;
     let lastNonSpace: number | undefined = undefined;
+    let nDelimsSkipped = 0;
 
     if (params.currentStringType !== undefined) {
         startingOffset = traverseUntilOutOfString(text, startingOffset, dir, params.currentStringType)!;
@@ -127,8 +131,12 @@ export function traverseUntilUnmatchedParen(
             }
             nestDepth--;
         } else if (params.stopAtDelims && nestDepth === 0 && DELIMS.includes(char)) {
-            boundaryOffset = i;
-            break;
+            if (nDelimsSkipped >= params.skipDelims) {
+                boundaryOffset = i;
+                break;
+            } else {
+                nDelimsSkipped++;
+            }
         } else if (QUOTES.includes(char)) {
             const stringExit = traverseUntilOutOfString(text, i + dir, dir, char);
             if (stringExit === undefined) {
@@ -160,4 +168,11 @@ export function traverseUntilUnmatchedParen(
     }
 
     return undefined;
+}
+
+export function isInParens(text: string, offset: number): boolean {
+    const currentStringType = getCurrentStringType(text, offset);
+    const parensLeft = traverseUntilUnmatchedParen(text, offset, -1, { currentStringType, skipDelims: Infinity });
+    const parensRight = traverseUntilUnmatchedParen(text, offset, 1, { currentStringType, skipDelims: Infinity });
+    return parensLeft !== undefined && parensRight !== undefined;
 }
