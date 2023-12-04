@@ -67,3 +67,48 @@ export function selectArg() {
 
     editor.selections = editor.selections.map(sel => expandSelectionDispatcher(editor.document, sel));
 }
+
+function moveCursor(doc: vscode.TextDocument, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
+    if (!sel.isEmpty) {
+        return sel;
+    }
+
+    const text = doc.getText();
+    const startOffset = doc.offsetAt(sel.active);
+    let endOffset = util.traverseUntilUnmatchedParen(text, startOffset, dir);
+    if (endOffset === undefined) {
+        return sel;
+    }
+    endOffset -= Math.min(0, dir);
+
+    if (dir === 1 && endOffset <= startOffset || dir === -1 && endOffset >= startOffset) {
+        endOffset = util.traverseUntilUnmatchedParen(text, startOffset, dir, { skipDelims: 1 });
+        if (endOffset === undefined) {
+            return sel;
+        }
+        endOffset -= Math.min(0, dir);
+    }
+
+    const endPos = doc.positionAt(endOffset);
+    return new vscode.Selection(endPos, endPos);
+}
+
+export function moveArgLeft() {
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+        return;
+    }
+
+    editor.selections = editor.selections.map(sel => moveCursor(editor.document, sel, -1));
+}
+
+export function moveArgRight() {
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+        return;
+    }
+
+    editor.selections = editor.selections.map(sel => moveCursor(editor.document, sel, 1));
+}
