@@ -116,7 +116,7 @@ export function traverseUntilUnmatchedParen(
     }
 
     let boundaryOffset: number | undefined = undefined;
-    for (let i = startingOffset; i < text.length && i >= 0; i += dir) {
+    for (let i = startingOffset + Math.min(dir, 0); i < text.length && i >= 0; i += dir) {
         const char = text[i];
         if (openers.includes(char)) {
             nestDepth++;
