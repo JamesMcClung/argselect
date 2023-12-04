@@ -169,3 +169,10 @@ export function traverseUntilUnmatchedParen(
 
     return undefined;
 }
+
+export function isInParens(text: string, offset: number): boolean {
+    const currentStringType = getCurrentStringType(text, offset);
+    const parensLeft = traverseUntilUnmatchedParen(text, offset, -1, { currentStringType, skipDelims: Infinity });
+    const parensRight = traverseUntilUnmatchedParen(text, offset, 1, { currentStringType, skipDelims: Infinity });
+    return parensLeft !== undefined && parensRight !== undefined;
+}
