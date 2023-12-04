@@ -75,6 +75,9 @@ function moveCursor(doc: vscode.TextDocument, sel: vscode.Selection, dir: -1 | 1
 
     const text = doc.getText();
     const startOffset = doc.offsetAt(sel.active);
+    if (!util.isInParens(text, startOffset)) {
+        return sel;
+    }
     let endOffset = util.traverseUntilUnmatchedParen(text, startOffset, dir);
     if (endOffset === undefined) {
         return sel;
