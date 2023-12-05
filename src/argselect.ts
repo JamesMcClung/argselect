@@ -68,32 +68,18 @@ export function selectArg() {
     editor.selections = editor.selections.map(sel => expandSelectionDispatcher(editor.document, sel));
 }
 
-function moveCursor(doc: vscode.TextDocument, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
-    if (!sel.isEmpty) {
-        return sel;
-    }
-
-    const text = doc.getText();
-    const startOffset = doc.offsetAt(sel.active);
-    if (!util.isInParens(text, startOffset)) {
-        return sel;
-    }
-    let endOffset = util.traverseUntilUnmatchedParen(text, startOffset, dir);
-    if (endOffset === undefined) {
-        return sel;
-    }
-    endOffset -= Math.min(0, dir);
-
-    if (dir === 1 && endOffset <= startOffset || dir === -1 && endOffset >= startOffset) {
-        endOffset = util.traverseUntilUnmatchedParen(text, startOffset, dir, { skipDelims: 1 });
-        if (endOffset === undefined) {
+function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
+    if (sel.isEmpty) {
+        const doc = editor.document;
+        const cursorOffset = doc.offsetAt(sel.active);
+        const newCursorOffset = util.moveCursor(doc.getText(), cursorOffset, dir);
+        if (newCursorOffset === undefined) {
             return sel;
         }
-        endOffset -= Math.min(0, dir);
+        const newPos = doc.positionAt(newCursorOffset);
+        return new vscode.Selection(newPos, newPos);
     }
-
-    const endPos = doc.positionAt(endOffset);
-    return new vscode.Selection(endPos, endPos);
+    throw Error("unimplemented");
 }
 
 export function moveArgLeft() {
@@ -103,7 +89,7 @@ export function moveArgLeft() {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => moveCursor(editor.document, sel, -1));
+    editor.selections = editor.selections.map(sel => moveArg(editor, sel, -1));
 }
 
 export function moveArgRight() {
@@ -113,5 +99,5 @@ export function moveArgRight() {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => moveCursor(editor.document, sel, 1));
+    editor.selections = editor.selections.map(sel => moveArg(editor, sel, 1));
 }
