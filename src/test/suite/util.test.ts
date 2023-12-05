@@ -179,4 +179,31 @@ suite('Extension Test Suite', () => {
         assert.strictEqual(10, util.traverseUntilUnmatchedParen(String.raw`(1, (5, 8))`, 10, 1));
         assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`(1, (5, 8))`, 11, 1));
     });
+    test('moveCursor', () => {
+        assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 0, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`(1, (5, 8))`, 1, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`(1, (5, 8))`, 2, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`(1, (5, 8))`, 3, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`(1, (5, 8))`, 4, -1));
+        assert.strictEqual(5, util.moveCursor(String.raw`(1, (5, 8))`, 5, -1));
+        assert.strictEqual(5, util.moveCursor(String.raw`(1, (5, 8))`, 6, -1));
+        assert.strictEqual(5, util.moveCursor(String.raw`(1, (5, 8))`, 7, -1));
+        assert.strictEqual(5, util.moveCursor(String.raw`(1, (5, 8))`, 8, -1));
+        assert.strictEqual(8, util.moveCursor(String.raw`(1, (5, 8))`, 9, -1));
+        assert.strictEqual(4, util.moveCursor(String.raw`(1, (5, 8))`, 10, -1));
+        assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 11, -1));
+
+        assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 0, 1));
+        assert.strictEqual(2, util.moveCursor(String.raw`(1, (5, 8))`, 1, 1));
+        assert.strictEqual(10, util.moveCursor(String.raw`(1, (5, 8))`, 2, 1));
+        assert.strictEqual(10, util.moveCursor(String.raw`(1, (5, 8))`, 3, 1));
+        assert.strictEqual(10, util.moveCursor(String.raw`(1, (5, 8))`, 4, 1));
+        assert.strictEqual(6, util.moveCursor(String.raw`(1, (5, 8))`, 5, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`(1, (5, 8))`, 6, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`(1, (5, 8))`, 7, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`(1, (5, 8))`, 8, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`(1, (5, 8))`, 9, 1));
+        assert.strictEqual(10, util.moveCursor(String.raw`(1, (5, 8))`, 10, 1));
+        assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 11, 1));
+    });
 });
