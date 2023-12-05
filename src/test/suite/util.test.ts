@@ -1,11 +1,8 @@
 import * as assert from 'assert';
 
-import * as vscode from 'vscode';
 import * as util from '../../util';
 
-suite('Extension Test Suite', () => {
-    vscode.window.showInformationMessage('Start all tests.');
-
+suite('Util Test Suite', () => {
     test('isEscaped', () => {
         assert.strictEqual(false, util.isEscaped(String.raw`"\""`, 0));
         assert.strictEqual(false, util.isEscaped(String.raw`"\""`, 1));
