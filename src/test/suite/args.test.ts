@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { Args } from '../../args';
+import { Arg, Args } from '../../args';
 
 suite('Args Test Suite', () => {
     test('constructor.basic', () => {
@@ -34,3 +34,32 @@ suite('Args Test Suite', () => {
     });
 });
 
+suite('Args Test Suite', () => {
+    test('constructor.noSpace', () => {
+        let arg = new Arg("noSpace");
+        assert.strictEqual("", arg.leftSpace);
+        assert.strictEqual("noSpace", arg.content);
+        assert.strictEqual("", arg.rightSpace);
+    });
+
+    test('constructor.leftSpace', () => {
+        let arg = new Arg(" leftSpace");
+        assert.strictEqual(" ", arg.leftSpace);
+        assert.strictEqual("leftSpace", arg.content);
+        assert.strictEqual("", arg.rightSpace);
+    });
+
+    test('constructor.rightSpace', () => {
+        let arg = new Arg("rightSpace ");
+        assert.strictEqual("", arg.leftSpace);
+        assert.strictEqual("rightSpace", arg.content);
+        assert.strictEqual(" ", arg.rightSpace);
+    });
+
+    test('constructor.bothSpace', () => {
+        let arg = new Arg(" bothSpace ");
+        assert.strictEqual(" ", arg.leftSpace);
+        assert.strictEqual("bothSpace", arg.content);
+        assert.strictEqual(" ", arg.rightSpace);
+    });
+});
