@@ -43,3 +43,32 @@ export class Args {
         }
     }
 }
+
+export class Arg {
+    leftSpace: string;
+    content: string;
+    rightSpace: string;
+
+    constructor(contents: string) {
+        const match = contents.match(/^(\s*)(.*?)(\s*)$/)!;
+        this.leftSpace = match[1];
+        this.content = match[2];
+        this.rightSpace = match[3];
+    }
+
+    length(): number {
+        return this.leftSpace.length + this.content.length + this.rightSpace.length;
+    }
+
+    toString(): string {
+        return this.leftSpace + this.content + this.rightSpace;
+    }
+
+    static swapContent(arg1: Arg, arg2: Arg) {
+        [arg1.content, arg2.content] = [arg2.content, arg1.content];
+    }
+
+    equals(other: Arg): boolean {
+        return this.leftSpace === other.leftSpace && this.content === other.content && this.rightSpace === other.rightSpace;
+    }
+}
