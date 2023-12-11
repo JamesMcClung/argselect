@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as util from './util';
+import { Args } from './args';
 
 export function helloWorld() {
     vscode.window.showInformationMessage('Hello World 2 from argselect!');
@@ -68,6 +69,12 @@ export function selectArg() {
     editor.selections = editor.selections.map(sel => expandSelectionDispatcher(editor.document, sel));
 }
 
+function shiftSelection(doc: vscode.TextDocument, sel: vscode.Selection, deltaOffset: number): vscode.Selection {
+    const newActiveOffset = doc.offsetAt(sel.active) + deltaOffset;
+    const newAnchorOffset = doc.offsetAt(sel.anchor) + deltaOffset;
+    return new vscode.Selection(doc.positionAt(newAnchorOffset), doc.positionAt(newActiveOffset));
+}
+
 function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
     const doc = editor.document;
     const activeOffset = doc.offsetAt(sel.active);
@@ -80,7 +87,15 @@ function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1):
         const newPos = doc.positionAt(newCursorOffset);
         return new vscode.Selection(newPos, newPos);
     }
-    throw Error("unimplemented");
+
+    const args = new Args(doc.getText(), activeOffset);
+    const deltaOffset = args.moveArgAt(activeOffset, dir);
+    editor.edit((edit: vscode.TextEditorEdit) => {
+        const startPos = doc.positionAt(args.getStartOffset());
+        const endPos = doc.positionAt(args.getEndOffset() + 1);
+        edit.replace(new vscode.Range(startPos, endPos), args.toString());
+    });
+    return shiftSelection(doc, sel, deltaOffset);
 }
 
 export function moveArgLeft() {
