@@ -2,6 +2,17 @@ import * as assert from 'assert';
 
 import { Arg, Args } from '../../args';
 
+function toArgs(...args: string[]): Arg[] {
+    return args.map(arg => new Arg(arg));
+}
+
+function assertArgsEqual(args1: Arg[], args2: Arg[]) {
+    assert.strictEqual(args1.length, args2.length);
+    for (let i = 0; i < args1.length; i++) {
+        assert.strictEqual(true, args1[i].equals(args2[i]));
+    }
+}
+
 suite('Args Test Suite', () => {
     test('constructor.basic', () => {
         assert.throws(() => new Args(String.raw`(1, 45)`, 0));
@@ -9,8 +20,8 @@ suite('Args Test Suite', () => {
 
         for (let i = 1; i <= 6; i++) {
             let args = new Args(String.raw`(1, 45)`, i);
-            assert.deepStrictEqual(["(", ", ", ")"], args.punctuation);
-            assert.deepStrictEqual(["1", "45"], args.contents);
+            assert.deepStrictEqual(["(", ",", ")"], args.punctuation);
+            assertArgsEqual(toArgs("1", " 45"), args.args);
         }
     });
 
@@ -19,18 +30,18 @@ suite('Args Test Suite', () => {
         assert.throws(() => new Args(String.raw`(1, (5,7))`, 10));
 
         let argsOuter = new Args(String.raw`(1, (5,7))`, 2);
-        assert.deepStrictEqual(["(", ", ", ")"], argsOuter.punctuation);
-        assert.deepStrictEqual(["1", "(5,7)"], argsOuter.contents);
+        assert.deepStrictEqual(["(", ",", ")"], argsOuter.punctuation);
+        assertArgsEqual(toArgs("1", " (5,7)"), argsOuter.args);
 
         let argsInner = new Args(String.raw`(1, (5,7))`, 5);
         assert.deepStrictEqual(["(", ",", ")"], argsInner.punctuation);
-        assert.deepStrictEqual(["5", "7"], argsInner.contents);
+        assertArgsEqual(toArgs("5", "7"), argsInner.args);
     });
 
     test('constructor.weirdSpaces', () => {
         let args = new Args(String.raw`( 2 , 6 8 )`, 2);
-        assert.deepStrictEqual(["( ", " , ", " )"], args.punctuation);
-        assert.deepStrictEqual(["2", "6 8"], args.contents);
+        assert.deepStrictEqual(["(", ",", ")"], args.punctuation);
+        assertArgsEqual(toArgs(" 2 ", " 6 8 "), args.args);
     });
 });
 
