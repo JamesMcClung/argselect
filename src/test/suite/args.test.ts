@@ -43,6 +43,21 @@ suite('Args Test Suite', () => {
         assert.deepStrictEqual(["(", ",", ")"], args.punctuation);
         assertArgsEqual(toArgs(" 2 ", " 6 8 "), args.args);
     });
+
+    test('getArgIdx', () => {
+        let args = new Args(String.raw`(123, 678)`, 1);
+        assert.strictEqual(undefined, args.getArgIdx(0));
+        assert.strictEqual(0, args.getArgIdx(1));
+        assert.strictEqual(0, args.getArgIdx(2));
+        assert.strictEqual(0, args.getArgIdx(3));
+        assert.strictEqual(0, args.getArgIdx(4));
+        assert.strictEqual(1, args.getArgIdx(5));
+        assert.strictEqual(1, args.getArgIdx(6));
+        assert.strictEqual(1, args.getArgIdx(7));
+        assert.strictEqual(1, args.getArgIdx(8));
+        assert.strictEqual(1, args.getArgIdx(9));
+        assert.strictEqual(undefined, args.getArgIdx(10));
+    });
 });
 
 suite('Args Test Suite', () => {
