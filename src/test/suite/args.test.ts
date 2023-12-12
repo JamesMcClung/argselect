@@ -58,6 +58,17 @@ suite('Args Test Suite', () => {
         assert.strictEqual(1, args.getArgIdx(9));
         assert.strictEqual(undefined, args.getArgIdx(10));
     });
+
+    test('moveArgAt.content', () => {
+        let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
+        assert.strictEqual("(hi, th ,  ere  )", args.toString());
+
+        assert.strictEqual(4, args.moveArgAt(1, +1));
+        assert.strictEqual("(th, hi ,  ere  )", args.toString());
+
+        assert.strictEqual(-6, args.moveArgAt(11, -1));
+        assert.strictEqual("(th, ere ,  hi  )", args.toString());
+    });
 });
 
 suite('Args Test Suite', () => {
