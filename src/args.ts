@@ -43,7 +43,7 @@ export class Args {
     /**
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
-    moveArgAt(argInteriorOffset: number, dir: -1 | 1): number {
+    moveArgAt(argInteriorOffset: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean): number {
         const argIdx1 = this.getArgIdx(argInteriorOffset);
         if (argIdx1 === undefined) {
             throw Error("internal argselect error: offset out of bounds");
@@ -64,7 +64,7 @@ export class Args {
         const deltaOffsetFromContent = arg2.content.length;
         const deltaOffsetFromRightSpace = argL.rightSpace.length;
 
-        Arg.swapContent(arg1, arg2);
+        Arg.swapContent(arg1, arg2, includeLeftSpace, includeRightSpace);
 
         return dir * (deltaOffsetFromPunctuation + deltaOffsetFromLeftSpace + deltaOffsetFromContent + deltaOffsetFromRightSpace);
     }
