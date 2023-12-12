@@ -56,12 +56,17 @@ export class Args {
         const arg1 = this.args[argIdx1];
         const arg2 = this.args[argIdx2];
 
+        const argL = dir === 1 ? arg1 : arg2;
+        const argR = dir === 1 ? arg2 : arg1;
+
+        const deltaOffsetFromPunctuation = this.punctuation[dir === 1 ? argIdx2 : argIdx1].length;
+        const deltaOffsetFromLeftSpace = argR.leftSpace.length;
+        const deltaOffsetFromContent = arg2.content.length;
+        const deltaOffsetFromRightSpace = argL.rightSpace.length;
+
         Arg.swapContent(arg1, arg2);
-        if (dir === 1) {
-            return arg1.content.length + arg1.rightSpace.length + this.punctuation[argIdx2].length + arg2.leftSpace.length;
-        } else {
-            return -arg1.content.length - arg1.leftSpace.length - this.punctuation[argIdx1].length - arg2.rightSpace.length;
-        }
+
+        return dir * (deltaOffsetFromPunctuation + deltaOffsetFromLeftSpace + deltaOffsetFromContent + deltaOffsetFromRightSpace);
     }
 
     toString(): string {
