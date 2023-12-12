@@ -56,17 +56,35 @@ export class Args {
         const arg1 = this.args[argIdx1];
         const arg2 = this.args[argIdx2];
 
-        const argL = dir === 1 ? arg1 : arg2;
-        const argR = dir === 1 ? arg2 : arg1;
-
         const deltaOffsetFromPunctuation = this.punctuation[dir === 1 ? argIdx2 : argIdx1].length;
-        const deltaOffsetFromLeftSpace = argR.leftSpace.length;
-        const deltaOffsetFromContent = arg2.content.length;
-        const deltaOffsetFromRightSpace = argL.rightSpace.length;
+
+        let deltaOffset;
+        // TODO make this not so brute force
+        if (includeLeftSpace && includeRightSpace) {
+            deltaOffset = arg2.length() + deltaOffsetFromPunctuation;
+        } else if (includeLeftSpace && !includeRightSpace) {
+            if (dir === 1) {
+                deltaOffset = arg1.rightSpace.length + deltaOffsetFromPunctuation + arg2.leftSpace.length + arg2.content.length;
+            } else {
+                deltaOffset = arg2.leftSpace.length + arg2.content.length + arg2.rightSpace.length + deltaOffsetFromPunctuation;
+            }
+        } else if (!includeLeftSpace && includeRightSpace) {
+            if (dir === 1) {
+                deltaOffset = deltaOffsetFromPunctuation + arg2.leftSpace.length + arg2.content.length + arg2.rightSpace.length;
+            } else {
+                deltaOffset = arg2.content.length + arg2.rightSpace.length + deltaOffsetFromPunctuation + arg1.leftSpace.length;
+            }
+        } else {
+            if (dir === 1) {
+                deltaOffset = arg1.rightSpace.length + deltaOffsetFromPunctuation + arg2.leftSpace.length + arg2.content.length;
+            } else {
+                deltaOffset = arg2.content.length + arg2.rightSpace.length + deltaOffsetFromPunctuation + arg1.leftSpace.length;
+            }
+        }
 
         Arg.swapContent(arg1, arg2, includeLeftSpace, includeRightSpace);
 
-        return dir * (deltaOffsetFromPunctuation + deltaOffsetFromLeftSpace + deltaOffsetFromContent + deltaOffsetFromRightSpace);
+        return dir * deltaOffset;
     }
 
     toString(): string {
