@@ -107,8 +107,14 @@ export class Arg {
         return this.leftSpace + this.content + this.rightSpace;
     }
 
-    static swapContent(arg1: Arg, arg2: Arg) {
+    static swapContent(arg1: Arg, arg2: Arg, includeLeftSpace?: boolean, includeRightSpace?: boolean) {
         [arg1.content, arg2.content] = [arg2.content, arg1.content];
+        if (includeLeftSpace) {
+            [arg1.leftSpace, arg2.leftSpace] = [arg2.leftSpace, arg1.leftSpace];
+        }
+        if (includeRightSpace) {
+            [arg1.rightSpace, arg2.rightSpace] = [arg2.rightSpace, arg1.rightSpace];
+        }
     }
 
     equals(other: Arg): boolean {
