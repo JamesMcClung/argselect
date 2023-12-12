@@ -69,6 +69,39 @@ suite('Args Test Suite', () => {
         assert.strictEqual(-6, args.moveArgAt(11, -1));
         assert.strictEqual("(th, ere ,  hi  )", args.toString());
     });
+
+    test('moveArgAt.leftSpace', () => {
+        let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
+        assert.strictEqual("(hi, th ,  ere  )", args.toString());
+
+        assert.strictEqual(4, args.moveArgAt(1, +1, true));
+        assert.strictEqual("( th,hi ,  ere  )", args.toString());
+
+        assert.strictEqual(-4, args.moveArgAt(11, -1, true));
+        assert.strictEqual("( th,  ere ,hi  )", args.toString());
+    });
+
+    test('moveArgAt.rightSpace', () => {
+        let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
+        assert.strictEqual("(hi, th ,  ere  )", args.toString());
+
+        assert.strictEqual(5, args.moveArgAt(1, +1, false, true));
+        assert.strictEqual("(th , hi,  ere  )", args.toString());
+
+        assert.strictEqual(-5, args.moveArgAt(11, -1, false, true));
+        assert.strictEqual("(th , ere  ,  hi)", args.toString());
+    });
+
+    test('moveArgAt.bothSpace', () => {
+        let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
+        assert.strictEqual("(hi, th ,  ere  )", args.toString());
+
+        assert.strictEqual(5, args.moveArgAt(1, +1, true, true));
+        assert.strictEqual("( th ,hi,  ere  )", args.toString());
+
+        assert.strictEqual(-3, args.moveArgAt(11, -1, true, true));
+        assert.strictEqual("( th ,  ere  ,hi)", args.toString());
+    });
 });
 
 suite('Args Test Suite', () => {
