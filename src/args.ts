@@ -84,6 +84,13 @@ export class Args {
         return dir * deltaOffset;
     }
 
+    /**
+     * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
+     */
+    moveArgsAt(leftOffset: number, rightOffset: number, dir: -1 | 1): number {
+        return this.moveArgAt(leftOffset, dir);
+    }
+
     toString(): string {
         let s = this.punctuation[0];
         for (let i = 0; i < this.args.length; i++) {
