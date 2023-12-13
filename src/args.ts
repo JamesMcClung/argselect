@@ -43,8 +43,7 @@ export class Args {
     /**
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
-    moveArgAt(offsetInDoc: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean): number {
-        const [argIdx1, _offsetInArg1] = this.getArgIdxAndOffsetInArg(offsetInDoc);
+    moveArg(argIdx1: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean): number {
         const argIdx2 = argIdx1 + dir;
         if (argIdx2 < 0 || argIdx2 >= this.args.length) {
             return 0;
@@ -88,7 +87,8 @@ export class Args {
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
     moveArgsAt(leftOffset: number, rightOffset: number, dir: -1 | 1): number {
-        return this.moveArgAt(leftOffset, dir);
+        const [argIdx1, _offsetInArg1] = this.getArgIdxAndOffsetInArg(leftOffset);
+        return this.moveArg(argIdx1, dir);
     }
 
     toString(): string {
