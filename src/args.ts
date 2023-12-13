@@ -28,11 +28,11 @@ export class Args {
         }
     }
 
-    getArgIdx(argInteriorOffset: number): number | undefined {
+    getArgIdx(offsetInDoc: number): number | undefined {
         let argStartOffset = this.startOffset + this.punctuation[0].length;
         for (let i = 0; i < this.args.length; i++) {
             const argEndOffset = argStartOffset + this.args[i].length();
-            if (argStartOffset <= argInteriorOffset && argInteriorOffset <= argEndOffset) {
+            if (argStartOffset <= offsetInDoc && offsetInDoc <= argEndOffset) {
                 return i;
             }
             argStartOffset = argEndOffset + this.punctuation[i + 1].length;
@@ -43,8 +43,8 @@ export class Args {
     /**
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
-    moveArgAt(argInteriorOffset: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean): number {
-        const argIdx1 = this.getArgIdx(argInteriorOffset);
+    moveArgAt(offsetInDoc: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean): number {
+        const argIdx1 = this.getArgIdx(offsetInDoc);
         if (argIdx1 === undefined) {
             throw Error("internal argselect error: offset out of bounds");
         }
