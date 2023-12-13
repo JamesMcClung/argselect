@@ -28,12 +28,12 @@ export class Args {
         }
     }
 
-    getArgIdx(offsetInDoc: number): number {
+    getArgIdxAndOffsetInArg(offsetInDoc: number): [number, number] {
         let argStartOffset = this.startOffset + this.punctuation[0].length;
         for (let i = 0; i < this.args.length; i++) {
             const argEndOffset = argStartOffset + this.args[i].length();
             if (argStartOffset <= offsetInDoc && offsetInDoc <= argEndOffset) {
-                return i;
+                return [i, offsetInDoc - argStartOffset];
             }
             argStartOffset = argEndOffset + this.punctuation[i + 1].length;
         }
@@ -44,7 +44,7 @@ export class Args {
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
     moveArgAt(offsetInDoc: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean): number {
-        const argIdx1 = this.getArgIdx(offsetInDoc);
+        const [argIdx1, _offsetInArg1] = this.getArgIdxAndOffsetInArg(offsetInDoc);
         const argIdx2 = argIdx1 + dir;
         if (argIdx2 < 0 || argIdx2 >= this.args.length) {
             return 0;

@@ -44,19 +44,19 @@ suite('Args Test Suite', () => {
         assertArgsEqual(toArgs(" 2 ", " 6 8 "), args.args);
     });
 
-    test('getArgIdx', () => {
+    test('getArgIdxAndOffsetInArg', () => {
         let args = new Args(String.raw`(123, 678)`, 1);
-        assert.strictEqual(undefined, args.getArgIdx(0));
-        assert.strictEqual(0, args.getArgIdx(1));
-        assert.strictEqual(0, args.getArgIdx(2));
-        assert.strictEqual(0, args.getArgIdx(3));
-        assert.strictEqual(0, args.getArgIdx(4));
-        assert.strictEqual(1, args.getArgIdx(5));
-        assert.strictEqual(1, args.getArgIdx(6));
-        assert.strictEqual(1, args.getArgIdx(7));
-        assert.strictEqual(1, args.getArgIdx(8));
-        assert.strictEqual(1, args.getArgIdx(9));
-        assert.strictEqual(undefined, args.getArgIdx(10));
+        assert.throws(() => args.getArgIdxAndOffsetInArg(0));
+        assert.deepStrictEqual([0, 0], args.getArgIdxAndOffsetInArg(1));
+        assert.deepStrictEqual([0, 1], args.getArgIdxAndOffsetInArg(2));
+        assert.deepStrictEqual([0, 2], args.getArgIdxAndOffsetInArg(3));
+        assert.deepStrictEqual([0, 3], args.getArgIdxAndOffsetInArg(4));
+        assert.deepStrictEqual([1, 0], args.getArgIdxAndOffsetInArg(5));
+        assert.deepStrictEqual([1, 1], args.getArgIdxAndOffsetInArg(6));
+        assert.deepStrictEqual([1, 2], args.getArgIdxAndOffsetInArg(7));
+        assert.deepStrictEqual([1, 3], args.getArgIdxAndOffsetInArg(8));
+        assert.deepStrictEqual([1, 4], args.getArgIdxAndOffsetInArg(9));
+        assert.throws(() => args.getArgIdxAndOffsetInArg(10));
     });
 
     test('moveArgAt.content', () => {
