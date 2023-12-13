@@ -85,7 +85,7 @@ function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1):
     }
 
     const args = new Args(doc.getText(), activeOffset);
-    const deltaOffset = args.moveArgAt(activeOffset, dir);
+    const deltaOffset = args.moveArgsAt(doc.offsetAt(sel.start), doc.offsetAt(sel.end), dir);
     editor.edit((edit: vscode.TextEditorEdit) => {
         const startPos = doc.positionAt(args.getStartOffset());
         const endPos = doc.positionAt(args.getEndOffset() + 1);
