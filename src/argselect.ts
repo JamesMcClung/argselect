@@ -6,8 +6,6 @@ export function helloWorld() {
     vscode.window.showInformationMessage('Hello World 2 from argselect!');
 }
 
-const DELIMS = [","];
-
 function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
 
@@ -18,9 +16,9 @@ function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverse
     }
 
     if (traverseParams.includeWhitespace) {
-        if (DELIMS.includes(text[closingParenOffset])) {
+        if (util.DELIMS.includes(text[closingParenOffset])) {
             closingParenOffset += 1;
-        } else if (DELIMS.includes(text[openingParenOffset])) {
+        } else if (util.DELIMS.includes(text[openingParenOffset])) {
             openingParenOffset -= 1;
         }
     }
