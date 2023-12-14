@@ -94,10 +94,9 @@ export function selectArg() {
 
 function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
     const doc = editor.document;
-    const activeOffset = doc.offsetAt(sel.active);
 
     if (sel.isEmpty) {
-        const newCursorOffset = util.moveCursor(doc.getText(), activeOffset, dir);
+        const newCursorOffset = util.moveCursor(doc.getText(), doc.offsetAt(sel.active), dir);
         if (newCursorOffset === undefined) {
             return sel;
         }
@@ -105,7 +104,11 @@ function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1):
         return new vscode.Selection(newPos, newPos);
     }
 
-    const args = new Args(doc.getText(), activeOffset);
+    const args = getArgsAt(doc, sel);
+    if (args === undefined) {
+        return sel;
+    }
+
     const [leftOffset, rightOffset] = args.moveArgsAt(doc.offsetAt(sel.start), doc.offsetAt(sel.end), dir);
     editor.edit((edit: vscode.TextEditorEdit) => {
         const startPos = doc.positionAt(args.getStartOffset());
