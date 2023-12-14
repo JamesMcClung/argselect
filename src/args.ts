@@ -113,7 +113,7 @@ export class Args {
         }
 
         const includeLeftSpace = offsetInArgL < 0 || this.args[argIdxL].isInLeftSpace(offsetInArgL);
-        const includeRightSpace = offsetInArgR > this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR);
+        const includeRightSpace = offsetInArgR > this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR - 1);
 
         if ((dir === 1 && argIdxR < this.args.length - 1) || (dir === -1 && argIdxL > 0)) {
             // used sometimes later
