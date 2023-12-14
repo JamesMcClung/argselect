@@ -14,11 +14,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "argselect.helloWorld",
-        "title": "Hello World",
-        "category": "ArgSelect"
-      },
-      {
         "command": "argselect.selectArg",
         "title": "Select Argument",
         "category": "ArgSelect"
@@ -35,12 +30,6 @@
       }
     ],
     "keybindings": [
-      {
-        "command": "argselect.helloWorld",
-        "key": "ctrl+f1",
-        "mac": "cmd+f1",
-        "when": "editorTextFocus"
-      },
       {
         "command": "argselect.selectArg",
         "key": "ctrl+up",
