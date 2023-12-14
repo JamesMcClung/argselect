@@ -104,15 +104,10 @@ export class Args {
 
         const includeLeftSpace = offsetInArgL < 0 || this.args[argIdxL].isInLeftSpace(offsetInArgL);
         const includeRightSpace = offsetInArgR >= this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR);
-        // TODO consolidate these loops
-        if (dir === 1 && argIdxR < this.args.length - 1) {
-            for (let i = argIdxR; i >= argIdxL; i--) {
-                const deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
-                leftOffset += deltaOffset;
-                rightOffset += deltaOffset;
-            }
-        } else if (dir === -1 && argIdxL > 0) {
-            for (let i = argIdxL; i <= argIdxR; i++) {
+
+        if ((dir === 1 && argIdxR < this.args.length - 1) || (dir === -1 && argIdxL > 0)) {
+            const startIdx = dir === 1 ? argIdxR : argIdxL;
+            for (let i = startIdx; argIdxL <= i && i <= argIdxR; i += dir) {
                 const deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
                 leftOffset += deltaOffset;
                 rightOffset += deltaOffset;
