@@ -3,7 +3,7 @@
   "displayName": "argselect",
   "publisher": "james-mcclung",
   "description": "adds commands that enable selection and manipulation of function arguments",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
     "vscode": "^1.84.0"
