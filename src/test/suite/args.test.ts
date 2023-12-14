@@ -59,6 +59,13 @@ suite('Args Test Suite', () => {
         assert.deepStrictEqual([1, 5], args.getArgIdxAndOffsetInArg(10));
     });
 
+    test('getOffsetOf', () => {
+        let args = new Args(String.raw`( 2 ,56 , 0)`, 1);
+        assert.strictEqual(1, args.getOffsetOf(0));
+        assert.strictEqual(5, args.getOffsetOf(1));
+        assert.strictEqual(9, args.getOffsetOf(2));
+    });
+
     test('moveArg.content', () => {
         let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
         assert.strictEqual("(hi, th ,  ere  )", args.toString());
