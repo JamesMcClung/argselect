@@ -51,47 +51,8 @@ export class Args {
         return argOffset;
     }
 
-    /**
-     * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
-     */
-    moveArg(argIdx1: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean): number {
-        const argIdx2 = argIdx1 + dir;
-        if (argIdx2 < 0 || argIdx2 >= this.args.length) {
-            return 0;
-        }
-
-        const arg1 = this.args[argIdx1];
-        const arg2 = this.args[argIdx2];
-
-        const deltaOffsetFromPunctuation = this.punctuation[dir === 1 ? argIdx2 : argIdx1].length;
-
-        let deltaOffset;
-        // TODO make this not so brute force
-        if (includeLeftSpace && includeRightSpace) {
-            deltaOffset = arg2.length() + deltaOffsetFromPunctuation;
-        } else if (includeLeftSpace && !includeRightSpace) {
-            if (dir === 1) {
-                deltaOffset = arg1.rightSpace.length + deltaOffsetFromPunctuation + arg2.leftSpace.length + arg2.content.length;
-            } else {
-                deltaOffset = arg2.leftSpace.length + arg2.content.length + arg2.rightSpace.length + deltaOffsetFromPunctuation;
-            }
-        } else if (!includeLeftSpace && includeRightSpace) {
-            if (dir === 1) {
-                deltaOffset = deltaOffsetFromPunctuation + arg2.leftSpace.length + arg2.content.length + arg2.rightSpace.length;
-            } else {
-                deltaOffset = arg2.content.length + arg2.rightSpace.length + deltaOffsetFromPunctuation + arg1.leftSpace.length;
-            }
-        } else {
-            if (dir === 1) {
-                deltaOffset = arg1.rightSpace.length + deltaOffsetFromPunctuation + arg2.leftSpace.length + arg2.content.length;
-            } else {
-                deltaOffset = arg2.content.length + arg2.rightSpace.length + deltaOffsetFromPunctuation + arg1.leftSpace.length;
-            }
-        }
-
-        Arg.swapContent(arg1, arg2, includeLeftSpace, includeRightSpace);
-
-        return dir * deltaOffset;
+    moveArg(argIdx: number, dir: -1 | 1, includeLeftSpace?: boolean, includeRightSpace?: boolean) {
+        Arg.swapContent(this.args[argIdx], this.args[argIdx + dir], includeLeftSpace, includeRightSpace);
     }
 
     /**

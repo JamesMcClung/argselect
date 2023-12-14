@@ -70,10 +70,10 @@ suite('Args Test Suite', () => {
         let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
         assert.strictEqual("(hi, th ,  ere  )", args.toString());
 
-        assert.strictEqual(4, args.moveArg(0, +1));
+        args.moveArg(0, +1);
         assert.strictEqual("(th, hi ,  ere  )", args.toString());
 
-        assert.strictEqual(-6, args.moveArg(2, -1));
+        args.moveArg(2, -1);
         assert.strictEqual("(th, ere ,  hi  )", args.toString());
     });
 
@@ -81,10 +81,10 @@ suite('Args Test Suite', () => {
         let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
         assert.strictEqual("(hi, th ,  ere  )", args.toString());
 
-        assert.strictEqual(4, args.moveArg(0, +1, true));
+        args.moveArg(0, +1, true);
         assert.strictEqual("( th,hi ,  ere  )", args.toString());
 
-        assert.strictEqual(-4, args.moveArg(2, -1, true));
+        args.moveArg(2, -1, true);
         assert.strictEqual("( th,  ere ,hi  )", args.toString());
     });
 
@@ -92,10 +92,10 @@ suite('Args Test Suite', () => {
         let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
         assert.strictEqual("(hi, th ,  ere  )", args.toString());
 
-        assert.strictEqual(5, args.moveArg(0, +1, false, true));
+        args.moveArg(0, +1, false, true);
         assert.strictEqual("(th , hi,  ere  )", args.toString());
 
-        assert.strictEqual(-5, args.moveArg(2, -1, false, true));
+        args.moveArg(2, -1, false, true);
         assert.strictEqual("(th , ere  ,  hi)", args.toString());
     });
 
@@ -103,10 +103,10 @@ suite('Args Test Suite', () => {
         let args = new Args(String.raw`(hi, th ,  ere  )`, 1);
         assert.strictEqual("(hi, th ,  ere  )", args.toString());
 
-        assert.strictEqual(5, args.moveArg(0, +1, true, true));
+        args.moveArg(0, +1, true, true);
         assert.strictEqual("( th ,hi,  ere  )", args.toString());
 
-        assert.strictEqual(-3, args.moveArg(2, -1, true, true));
+        args.moveArg(2, -1, true, true);
         assert.strictEqual("( th ,  ere  ,hi)", args.toString());
     });
 });
