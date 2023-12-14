@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.0.3
+
+- Link to GitHub issues in README.md
+
 ## v1.0.2
 
 - Update description in package.json
