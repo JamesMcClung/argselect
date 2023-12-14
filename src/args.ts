@@ -87,8 +87,19 @@ export class Args {
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
     moveArgsAt(leftOffset: number, rightOffset: number, dir: -1 | 1): number {
-        const [argIdx1, _offsetInArg1] = this.getArgIdxAndOffsetInArg(leftOffset);
-        return this.moveArg(argIdx1, dir);
+        const [argIdxL, _offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset);
+        const [argIdxR, _offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset);
+        let deltaOffset = 0;
+        if (dir === 1 && argIdxR < this.args.length - 1) {
+            for (let i = argIdxR; i >= argIdxL; i--) {
+                deltaOffset = this.moveArg(i, dir);
+            }
+        } else if (dir === -1 && argIdxL > 0) {
+            for (let i = argIdxL; i <= argIdxR; i++) {
+                deltaOffset = this.moveArg(i, dir);
+            }
+        }
+        return deltaOffset;
     }
 
     toString(): string {
@@ -141,5 +152,19 @@ export class Arg {
 
     equals(other: Arg): boolean {
         return this.leftSpace === other.leftSpace && this.content === other.content && this.rightSpace === other.rightSpace;
+    }
+
+    isInLeftSpace(offsetInArg: number): boolean {
+        return offsetInArg < this.leftSpace.length;
+    }
+
+    isInContent(offsetInArg: number): boolean {
+        const offsetInContent = offsetInArg - this.leftSpace.length;
+        return 0 <= offsetInContent && offsetInContent < this.content.length;
+    }
+
+    isInRightSpace(offsetInArg: number): boolean {
+        const offsetInRightArg = offsetInArg - this.leftSpace.length - this.content.length;
+        return 0 <= offsetInRightArg && offsetInRightArg < this.rightSpace.length;
     }
 }
