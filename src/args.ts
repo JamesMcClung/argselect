@@ -43,6 +43,14 @@ export class Args {
         throw Error("internal argselect logic error: should have returned in loop");
     }
 
+    getOffsetOf(argIdx: number): number {
+        let argOffset = this.startOffset + this.punctuation[0].length;
+        for (let i = 0; i < argIdx; i++) {
+            argOffset += this.args[i].length() + this.punctuation[i + 1].length;
+        }
+        return argOffset;
+    }
+
     /**
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
