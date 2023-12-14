@@ -49,7 +49,6 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
         for (let paramAttempt of paramAttempts) {
             let maybeNewSel = expandSelection(doc, sel, { ...paramAttempt, initialNestDepth });
             if (maybeNewSel === undefined) {
-                vscode.window.showInformationMessage("ArgSelect: Nothing to expand selection to");
                 return sel;
             }
             if (!sel.contains(maybeNewSel) && (maybeNewSel.contains(sel) || sel.isEmpty)) {
