@@ -5,22 +5,22 @@ import { Args } from './args';
 function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
 
-    let openingParenOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, -1, traverseParams);
-    let closingParenOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, 1, traverseParams);
-    if (closingParenOffset === undefined || openingParenOffset === undefined) {
+    let selStartOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, -1, traverseParams);
+    let selEndOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, 1, traverseParams);
+    if (selEndOffset === undefined || selStartOffset === undefined) {
         return undefined; // hi jam!
     }
 
     if (traverseParams.includeWhitespace) {
-        if (util.DELIMS.includes(text[closingParenOffset])) {
-            closingParenOffset += 1;
-        } else if (util.DELIMS.includes(text[openingParenOffset])) {
-            openingParenOffset -= 1;
+        if (util.DELIMS.includes(text[selEndOffset])) {
+            selEndOffset += 1;
+        } else if (util.DELIMS.includes(text[selStartOffset])) {
+            selStartOffset -= 1;
         }
     }
 
-    const anchorPos = doc.positionAt(openingParenOffset + 1);
-    const activePos = doc.positionAt(closingParenOffset);
+    const anchorPos = doc.positionAt(selStartOffset + 1);
+    const activePos = doc.positionAt(selEndOffset);
     const newSel = new vscode.Selection(anchorPos, activePos);
     if (newSel.isReversed) {
         // happens when selecting pure whitespace as an arg
