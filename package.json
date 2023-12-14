@@ -2,8 +2,8 @@
   "name": "argselect",
   "displayName": "argselect",
   "publisher": "james-mcclung",
-  "description": "adds commands that enable selection and manipulation of function arguments",
-  "version": "1.0.1",
+  "description": "Adds commands for selecting and manipulating function arguments and parameters.",
+  "version": "1.0.2",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
     "vscode": "^1.84.0"
