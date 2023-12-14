@@ -103,15 +103,17 @@ export class Args {
 
         // don't include the rightmost arg if only its left punctuation is selected
         if (offsetInArgR === 0 && argIdxR !== argIdxL) {
-            [argIdxR, offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset - 1);
+            argIdxR -= 1;
+            offsetInArgR = this.args[argIdxR].length() + 1;
         }
         // same for leftmost arg
         if (offsetInArgL === this.args[argIdxL].length() && argIdxL !== argIdxR) {
-            [argIdxL, offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset + 1);
+            argIdxL += 1;
+            offsetInArgL = -1;
         }
 
         const includeLeftSpace = offsetInArgL < 0 || this.args[argIdxL].isInLeftSpace(offsetInArgL);
-        const includeRightSpace = offsetInArgR >= this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR);
+        const includeRightSpace = offsetInArgR > this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR);
 
         if ((dir === 1 && argIdxR < this.args.length - 1) || (dir === -1 && argIdxL > 0)) {
             // used sometimes later
