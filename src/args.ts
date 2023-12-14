@@ -90,10 +90,20 @@ export class Args {
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
     moveArgsAt(leftOffset: number, rightOffset: number, dir: -1 | 1): number {
-        const [argIdxL, offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset);
-        const [argIdxR, offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset);
-        const includeLeftSpace = this.args[argIdxL].isInLeftSpace(offsetInArgL);
-        const includeRightSpace = this.args[argIdxR].isInRightSpace(offsetInArgR);
+        let [argIdxL, offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset);
+        let [argIdxR, offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset);
+
+        // don't include the rightmost arg if only its left punctuation is selected
+        if (offsetInArgR === 0 && argIdxR !== argIdxL) {
+            [argIdxR, offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset - 1);
+        }
+        // same for leftmost arg
+        if (offsetInArgL === this.args[argIdxL].length() && argIdxL !== argIdxR) {
+            [argIdxL, offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset + 1);
+        }
+
+        const includeLeftSpace = offsetInArgL < 0 || this.args[argIdxL].isInLeftSpace(offsetInArgL);
+        const includeRightSpace = offsetInArgR >= this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR);
         let deltaOffset = 0;
         if (dir === 1 && argIdxR < this.args.length - 1) {
             for (let i = argIdxR; i >= argIdxL; i--) {
