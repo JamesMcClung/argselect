@@ -8,12 +8,11 @@ export function helloWorld() {
 
 const DELIMS = [","];
 
-function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
+function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
-    const startOffset = doc.offsetAt(sel.active);
 
-    let openingParenOffset = util.traverseUntilUnmatchedParen(text, startOffset, -1, traverseParams);
-    let closingParenOffset = util.traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
+    let openingParenOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, -1, traverseParams);
+    let closingParenOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, 1, traverseParams);
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
         return undefined; // hi jam!
     }
@@ -47,7 +46,7 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
         for (let paramAttempt of paramAttempts) {
-            let maybeNewSel = expandSelection(doc, sel, { ...paramAttempt, initialNestDepth });
+            let maybeNewSel = selectAtCursor(doc, doc.offsetAt(sel.active), { ...paramAttempt, initialNestDepth });
             if (maybeNewSel === undefined) {
                 return sel;
             }
