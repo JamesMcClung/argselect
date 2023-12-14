@@ -114,14 +114,31 @@ export class Args {
         const includeRightSpace = offsetInArgR >= this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR);
 
         if ((dir === 1 && argIdxR < this.args.length - 1) || (dir === -1 && argIdxL > 0)) {
+            // used sometimes later
+            const oldLeftSpaceLen = this.args[argIdxL].leftSpace.length;
+
+            // do the move
             const startIdx = dir === 1 ? argIdxR : argIdxL;
-            for (let i = startIdx; argIdxL <= i && i <= argIdxR; i += dir) {
-                const deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
-                leftOffset += deltaOffset;
-                rightOffset += deltaOffset;
+            for (let i = startIdx; argIdxL <= i && i <= argIdxR; i -= dir) {
+                this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
             }
+
+            // figure out new selection bounds
+            let newLeftOffset = this.getOffsetOf(argIdxL + dir) + offsetInArgL;
+            let newRightOffset = this.getOffsetOf(argIdxR + dir) + offsetInArgR;
+
+            if (!includeLeftSpace) {
+                const spaceDiff = this.args[argIdxL + dir].leftSpace.length - oldLeftSpaceLen;
+                newLeftOffset += spaceDiff;
+                if (argIdxL === argIdxR) {
+                    newRightOffset += spaceDiff;
+                }
+            }
+
+            return [newLeftOffset, newRightOffset];
+        } else {
+            return [leftOffset, rightOffset];
         }
-        return [leftOffset, rightOffset];
     }
 
     toString(): string {
