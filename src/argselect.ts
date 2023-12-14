@@ -2,10 +2,6 @@ import * as vscode from 'vscode';
 import * as util from './util';
 import { Args } from './args';
 
-export function helloWorld() {
-    vscode.window.showInformationMessage('Hello World 2 from argselect!');
-}
-
 function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
 
