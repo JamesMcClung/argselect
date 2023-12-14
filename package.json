@@ -11,6 +11,13 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "select",
+    "move",
+    "function",
+    "argument",
+    "parameter"
+  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
