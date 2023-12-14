@@ -35,7 +35,7 @@ function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverse
     return newSel;
 }
 
-function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
+function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
     const currentStringType = util.getCurrentStringType(doc.getText(), doc.offsetAt(sel.active));
     const paramAttempts: util.TraverseParams[] = [
         { currentStringType },
@@ -64,7 +64,7 @@ export function selectArg() {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => expandSelectionDispatcher(editor.document, sel));
+    editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
 }
 
 function shiftSelection(doc: vscode.TextDocument, sel: vscode.Selection, deltaOffset: number): vscode.Selection {
