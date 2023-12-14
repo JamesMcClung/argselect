@@ -28,16 +28,19 @@ export class Args {
         }
     }
 
+    /**
+     * @returns `[argIdx, offsetInArg]` where `argIdx` is which arg contains the given offset and `offsetInArg` is the offset as measured from the start of the arg. Note that offsetInArg can be negative (for the first arg) or greater than the arg length (for the last arg) when offsetInDoc does not fall in the bounds of this Args object.
+     */
     getArgIdxAndOffsetInArg(offsetInDoc: number): [number, number] {
         let argStartOffset = this.startOffset + this.punctuation[0].length;
         for (let i = 0; i < this.args.length; i++) {
             const argEndOffset = argStartOffset + this.args[i].length();
-            if (argStartOffset <= offsetInDoc && offsetInDoc <= argEndOffset) {
+            if (offsetInDoc <= argEndOffset || i === this.args.length - 1) {
                 return [i, offsetInDoc - argStartOffset];
             }
             argStartOffset = argEndOffset + this.punctuation[i + 1].length;
         }
-        throw Error("internal argselect error: offset out of bounds");
+        throw Error("internal argselect logic error: should have returned in loop");
     }
 
     /**

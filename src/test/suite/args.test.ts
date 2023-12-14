@@ -46,7 +46,7 @@ suite('Args Test Suite', () => {
 
     test('getArgIdxAndOffsetInArg', () => {
         let args = new Args(String.raw`(123, 678)`, 1);
-        assert.throws(() => args.getArgIdxAndOffsetInArg(0));
+        assert.deepStrictEqual([0, -1], args.getArgIdxAndOffsetInArg(0));
         assert.deepStrictEqual([0, 0], args.getArgIdxAndOffsetInArg(1));
         assert.deepStrictEqual([0, 1], args.getArgIdxAndOffsetInArg(2));
         assert.deepStrictEqual([0, 2], args.getArgIdxAndOffsetInArg(3));
@@ -56,7 +56,7 @@ suite('Args Test Suite', () => {
         assert.deepStrictEqual([1, 2], args.getArgIdxAndOffsetInArg(7));
         assert.deepStrictEqual([1, 3], args.getArgIdxAndOffsetInArg(8));
         assert.deepStrictEqual([1, 4], args.getArgIdxAndOffsetInArg(9));
-        assert.throws(() => args.getArgIdxAndOffsetInArg(10));
+        assert.deepStrictEqual([1, 5], args.getArgIdxAndOffsetInArg(10));
     });
 
     test('moveArg.content', () => {
