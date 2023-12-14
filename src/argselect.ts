@@ -65,12 +65,6 @@ export function selectArg() {
     editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
 }
 
-function shiftSelection(doc: vscode.TextDocument, sel: vscode.Selection, deltaOffset: number): vscode.Selection {
-    const newActiveOffset = doc.offsetAt(sel.active) + deltaOffset;
-    const newAnchorOffset = doc.offsetAt(sel.anchor) + deltaOffset;
-    return new vscode.Selection(doc.positionAt(newAnchorOffset), doc.positionAt(newActiveOffset));
-}
-
 function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
     const doc = editor.document;
     const activeOffset = doc.offsetAt(sel.active);
