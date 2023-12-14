@@ -87,9 +87,9 @@ export class Args {
     }
 
     /**
-     * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
+     * @returns what the new selection offset bounds should be
      */
-    moveArgsAt(leftOffset: number, rightOffset: number, dir: -1 | 1): number {
+    moveArgsAt(leftOffset: number, rightOffset: number, dir: -1 | 1): [number, number] {
         let [argIdxL, offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset);
         let [argIdxR, offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset);
 
@@ -104,17 +104,21 @@ export class Args {
 
         const includeLeftSpace = offsetInArgL < 0 || this.args[argIdxL].isInLeftSpace(offsetInArgL);
         const includeRightSpace = offsetInArgR >= this.args[argIdxR].length() || this.args[argIdxR].isInRightSpace(offsetInArgR);
-        let deltaOffset = 0;
+        // TODO consolidate these loops
         if (dir === 1 && argIdxR < this.args.length - 1) {
             for (let i = argIdxR; i >= argIdxL; i--) {
-                deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
+                const deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
+                leftOffset += deltaOffset;
+                rightOffset += deltaOffset;
             }
         } else if (dir === -1 && argIdxL > 0) {
             for (let i = argIdxL; i <= argIdxR; i++) {
-                deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
+                const deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
+                leftOffset += deltaOffset;
+                rightOffset += deltaOffset;
             }
         }
-        return deltaOffset;
+        return [leftOffset, rightOffset];
     }
 
     toString(): string {
