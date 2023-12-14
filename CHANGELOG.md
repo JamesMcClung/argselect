@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.0.2
+
+- Update description in package.json
+
 ## v1.0.1
 
 - Add keywords to package.json
