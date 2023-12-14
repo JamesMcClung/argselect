@@ -1,9 +1,12 @@
 # Change Log
 
-All notable changes to the "argselect" extension will be documented in this file.
+## v1.0.0: Initial Release
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+- New command: `argselect.selectArg`
+    - Default key binding: `ctrl+up`
+    - Expands current selection to include increasingly more of the current argument
+- New commands: `argselect.moveArgLeft` and `argselect.moveArgRight`
+    - Default key bindings: `ctrl+left` and `ctrl+right`, respectively
+    - If nothing is selected: moves cursor to the next argument on the left or right, respectively
+    - If parts of one or more arguments are selected: moves the selected argument(s) to the left or right, respectively
+- Tests of low-level helper functions
