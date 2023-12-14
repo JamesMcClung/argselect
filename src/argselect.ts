@@ -11,6 +11,7 @@ function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverse
         return undefined; // hi jam!
     }
 
+    // when we include whitespace, it's assumed we also want to include a delim on one side (but not both sides)
     if (traverseParams.includeWhitespace) {
         if (util.DELIMS.includes(text[selEndOffset])) {
             selEndOffset += 1;
