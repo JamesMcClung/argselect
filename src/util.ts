@@ -1,6 +1,6 @@
-const OPENING_PARENS = ["(", "[", "{"];
-const CLOSING_PARENS = [")", "]", "}"];
-const DELIMS = [","];
+export const OPENING_PARENS = ["(", "[", "{"];
+export const CLOSING_PARENS = [")", "]", "}"];
+export const DELIMS = [","];
 const WHITESPACE = [" ", "\t", "\n"];
 const QUOTES = ["'", '"'];
 const CHARS_NOT_IN_STRINGS = ["\n"];

@@ -6,22 +6,19 @@ export function helloWorld() {
     vscode.window.showInformationMessage('Hello World 2 from argselect!');
 }
 
-const DELIMS = [","];
-
-function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
+function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
-    const startOffset = doc.offsetAt(sel.active);
 
-    let openingParenOffset = util.traverseUntilUnmatchedParen(text, startOffset, -1, traverseParams);
-    let closingParenOffset = util.traverseUntilUnmatchedParen(text, startOffset, 1, traverseParams);
+    let openingParenOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, -1, traverseParams);
+    let closingParenOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, 1, traverseParams);
     if (closingParenOffset === undefined || openingParenOffset === undefined) {
         return undefined; // hi jam!
     }
 
     if (traverseParams.includeWhitespace) {
-        if (DELIMS.includes(text[closingParenOffset])) {
+        if (util.DELIMS.includes(text[closingParenOffset])) {
             closingParenOffset += 1;
-        } else if (DELIMS.includes(text[openingParenOffset])) {
+        } else if (util.DELIMS.includes(text[openingParenOffset])) {
             openingParenOffset -= 1;
         }
     }
@@ -36,7 +33,7 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection, traver
     return newSel;
 }
 
-function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
+function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
     const currentStringType = util.getCurrentStringType(doc.getText(), doc.offsetAt(sel.active));
     const paramAttempts: util.TraverseParams[] = [
         { currentStringType },
@@ -47,7 +44,7 @@ function expandSelectionDispatcher(doc: vscode.TextDocument, sel: vscode.Selecti
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
         for (let paramAttempt of paramAttempts) {
-            let maybeNewSel = expandSelection(doc, sel, { ...paramAttempt, initialNestDepth });
+            let maybeNewSel = selectAtCursor(doc, doc.offsetAt(sel.active), { ...paramAttempt, initialNestDepth });
             if (maybeNewSel === undefined) {
                 return sel;
             }
@@ -65,7 +62,7 @@ export function selectArg() {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => expandSelectionDispatcher(editor.document, sel));
+    editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
 }
 
 function shiftSelection(doc: vscode.TextDocument, sel: vscode.Selection, deltaOffset: number): vscode.Selection {
