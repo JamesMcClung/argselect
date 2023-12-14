@@ -55,6 +55,33 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
     }
 }
 
+function getArgsAt(doc: vscode.TextDocument, sel: vscode.Selection): Args | undefined {
+    if (sel.isEmpty) {
+        return new Args(doc.getText(), doc.offsetAt(sel.start));
+    }
+
+    // start search inside parens if we're at them; if not, adding 1 doesn't matter
+    const searchStart = doc.offsetAt(sel.start) + 1;
+    const currentStringType = util.getCurrentStringType(doc.getText(), searchStart);
+    const traverseParams: util.TraverseParams = { currentStringType, includeWhitespace: true, skipDelims: Infinity };
+
+    for (let initialNestDepth = 0; ; initialNestDepth++) {
+        let maybeNewSel = selectAtCursor(doc, searchStart, { ...traverseParams, initialNestDepth });
+
+        if (maybeNewSel === undefined) {
+            return undefined;
+        }
+
+        // hack to include parens, since selectAtCursor never includes them
+        const innerStartOffset = doc.offsetAt(maybeNewSel.start);
+        maybeNewSel = new vscode.Selection(doc.positionAt(-1 + innerStartOffset), doc.positionAt(1 + doc.offsetAt(maybeNewSel.end)));
+
+        if (maybeNewSel.contains(sel) && !maybeNewSel.isEqual(sel)) {
+            return new Args(doc.getText(), innerStartOffset);
+        }
+    }
+}
+
 export function selectArg() {
     const editor = vscode.window.activeTextEditor;
 
@@ -65,18 +92,11 @@ export function selectArg() {
     editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
 }
 
-function shiftSelection(doc: vscode.TextDocument, sel: vscode.Selection, deltaOffset: number): vscode.Selection {
-    const newActiveOffset = doc.offsetAt(sel.active) + deltaOffset;
-    const newAnchorOffset = doc.offsetAt(sel.anchor) + deltaOffset;
-    return new vscode.Selection(doc.positionAt(newAnchorOffset), doc.positionAt(newActiveOffset));
-}
-
 function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
     const doc = editor.document;
-    const activeOffset = doc.offsetAt(sel.active);
 
     if (sel.isEmpty) {
-        const newCursorOffset = util.moveCursor(doc.getText(), activeOffset, dir);
+        const newCursorOffset = util.moveCursor(doc.getText(), doc.offsetAt(sel.active), dir);
         if (newCursorOffset === undefined) {
             return sel;
         }
@@ -84,14 +104,22 @@ function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1):
         return new vscode.Selection(newPos, newPos);
     }
 
-    const args = new Args(doc.getText(), activeOffset);
-    const deltaOffset = args.moveArgAt(activeOffset, dir);
+    const args = getArgsAt(doc, sel);
+    if (args === undefined) {
+        return sel;
+    }
+
+    const [leftOffset, rightOffset] = args.moveArgsAt(doc.offsetAt(sel.start), doc.offsetAt(sel.end), dir);
     editor.edit((edit: vscode.TextEditorEdit) => {
         const startPos = doc.positionAt(args.getStartOffset());
         const endPos = doc.positionAt(args.getEndOffset() + 1);
         edit.replace(new vscode.Range(startPos, endPos), args.toString());
     });
-    return shiftSelection(doc, sel, deltaOffset);
+    if (sel.isReversed) {
+        return new vscode.Selection(doc.positionAt(rightOffset), doc.positionAt(leftOffset));
+    } else {
+        return new vscode.Selection(doc.positionAt(leftOffset), doc.positionAt(rightOffset));
+    }
 }
 
 export function moveArgLeft() {
