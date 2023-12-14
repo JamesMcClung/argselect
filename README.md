@@ -32,7 +32,7 @@ This extension has no requirements.
 
 ## Known Issues
 
-None so far...
+See https://github.com/JamesMcClung/argselect/issues
 
 ## Release Notes
 
