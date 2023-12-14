@@ -87,16 +87,18 @@ export class Args {
      * @returns the deltaOffset of the moved argument, so selections can be updated accordingly
      */
     moveArgsAt(leftOffset: number, rightOffset: number, dir: -1 | 1): number {
-        const [argIdxL, _offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset);
-        const [argIdxR, _offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset);
+        const [argIdxL, offsetInArgL] = this.getArgIdxAndOffsetInArg(leftOffset);
+        const [argIdxR, offsetInArgR] = this.getArgIdxAndOffsetInArg(rightOffset);
+        const includeLeftSpace = this.args[argIdxL].isInLeftSpace(offsetInArgL);
+        const includeRightSpace = this.args[argIdxR].isInRightSpace(offsetInArgR);
         let deltaOffset = 0;
         if (dir === 1 && argIdxR < this.args.length - 1) {
             for (let i = argIdxR; i >= argIdxL; i--) {
-                deltaOffset = this.moveArg(i, dir);
+                deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
             }
         } else if (dir === -1 && argIdxL > 0) {
             for (let i = argIdxL; i <= argIdxR; i++) {
-                deltaOffset = this.moveArg(i, dir);
+                deltaOffset = this.moveArg(i, dir, includeLeftSpace || i !== argIdxL, includeRightSpace || i !== argIdxR);
             }
         }
         return deltaOffset;
