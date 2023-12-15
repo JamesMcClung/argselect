@@ -13,9 +13,7 @@ function offsetsToSelection(offsets: [number, number] | undefined, doc: vscode.T
 }
 
 
-function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
-    const text = doc.getText();
-
+function selectAtCursor(text: string, cursorOffset: number, traverseParams: util.TraverseParams = {}): [number, number] | undefined {
     let selStartOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, -1, traverseParams);
     let selEndOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, 1, traverseParams);
     if (selEndOffset === undefined || selStartOffset === undefined) {
@@ -30,19 +28,14 @@ function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverse
             selStartOffset -= 1;
         }
     }
-
-    const anchorPos = doc.positionAt(selStartOffset + 1);
-    const activePos = doc.positionAt(selEndOffset);
-    const newSel = new vscode.Selection(anchorPos, activePos);
-    if (newSel.isReversed) {
-        // happens when selecting pure whitespace as an arg
-        return new vscode.Selection(activePos, anchorPos);
-    }
-    return newSel;
+    selStartOffset += 1; // want cursor to be placed to the *right* of the left boundary
+    // min/max business is to handle case when selecting pure whitespace
+    return [Math.min(selStartOffset, selEndOffset), Math.max(selStartOffset, selEndOffset)];
 }
 
 function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
-    const currentStringType = util.getCurrentStringType(doc.getText(), doc.offsetAt(sel.active));
+    const text = doc.getText();
+    const currentStringType = util.getCurrentStringType(text, doc.offsetAt(sel.active));
     const paramAttempts: util.TraverseParams[] = [
         { currentStringType },
         { currentStringType, includeWhitespace: true },
@@ -52,7 +45,7 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
         for (let paramAttempt of paramAttempts) {
-            let maybeNewSel = selectAtCursor(doc, doc.offsetAt(sel.active), { ...paramAttempt, initialNestDepth });
+            let maybeNewSel = offsetsToSelection(selectAtCursor(text, doc.offsetAt(sel.active), { ...paramAttempt, initialNestDepth }), doc);
             if (maybeNewSel === undefined) {
                 return sel;
             }
@@ -64,27 +57,28 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
 }
 
 function getArgsAt(doc: vscode.TextDocument, sel: vscode.Selection): Args | undefined {
+    const text = doc.getText();
+
     if (sel.isEmpty) {
-        return new Args(doc.getText(), doc.offsetAt(sel.start));
+        return new Args(text, doc.offsetAt(sel.start));
     }
 
     // start search inside parens if we're at them; if not, adding 1 doesn't matter
     const searchStart = doc.offsetAt(sel.start) + 1;
-    const currentStringType = util.getCurrentStringType(doc.getText(), searchStart);
+    const currentStringType = util.getCurrentStringType(text, searchStart);
     const traverseParams: util.TraverseParams = { currentStringType, includeWhitespace: true, skipDelims: Infinity };
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
-        let maybeNewSel = selectAtCursor(doc, searchStart, { ...traverseParams, initialNestDepth });
-
-        if (maybeNewSel === undefined) {
+        let maybeNewSelOffsets = selectAtCursor(text, searchStart, { ...traverseParams, initialNestDepth });
+        if (maybeNewSelOffsets === undefined) {
             return undefined;
         }
 
         // hack to include parens, since selectAtCursor never includes them
-        const innerStartOffset = doc.offsetAt(maybeNewSel.start);
-        maybeNewSel = new vscode.Selection(doc.positionAt(-1 + innerStartOffset), doc.positionAt(1 + doc.offsetAt(maybeNewSel.end)));
+        const innerStartOffset = maybeNewSelOffsets[0];
+        const newSel = offsetsToSelection([maybeNewSelOffsets[0] - 1, maybeNewSelOffsets[1] + 1], doc)!;
 
-        if (maybeNewSel.contains(sel) && !maybeNewSel.isEqual(sel)) {
+        if (newSel.contains(sel) && !newSel.isEqual(sel)) {
             return new Args(doc.getText(), innerStartOffset);
         }
     }
