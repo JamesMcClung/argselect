@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.1
+
+- Update README release notes
+
 ## v1.1.0
 
 - Fix https://github.com/JamesMcClung/argselect/issues/1
