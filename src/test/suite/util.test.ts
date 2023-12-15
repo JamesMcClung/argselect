@@ -203,4 +203,17 @@ suite('Util Test Suite', () => {
         assert.strictEqual(10, util.moveCursor(String.raw`(1, (5, 8))`, 10, 1));
         assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 11, 1));
     });
+
+    test('selectAtCursor.basic', () => {
+        assert.deepStrictEqual(undefined, util.selectAtCursor(String.raw`(123, 67)`, 0));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`(123, 67)`, 1));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`(123, 67)`, 2));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`(123, 67)`, 3));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`(123, 67)`, 4));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`(123, 67)`, 5));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`(123, 67)`, 6));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`(123, 67)`, 7));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`(123, 67)`, 8));
+        assert.deepStrictEqual(undefined, util.selectAtCursor(String.raw`(123, 67)`, 9));
+    });
 });
