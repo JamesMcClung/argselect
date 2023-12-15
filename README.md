@@ -36,6 +36,10 @@ See https://github.com/JamesMcClung/argselect/issues
 
 ## Release Notes
 
+### 1.1.0
+
+Fixed a bug that caused each command to fail when the arguments contained a string.
+
 ### 1.0.0
 
 Added `argselect.selectArg`, `argselect.moveArgLeft`, and `argselect.moveArgRight` commands.
