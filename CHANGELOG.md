@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.2
+
+- Improve error messages and suppress a particularly annoying one
+
 ## v1.1.1
 
 - Update README release notes

@@ -40,7 +40,7 @@ export class Args {
             }
             argStartOffset = argEndOffset + this.punctuation[i + 1].length;
         }
-        throw Error("internal argselect logic error: should have returned in loop");
+        throw Error("argselect logic error: should have returned in loop");
     }
 
     getOffsetOf(argIdx: number): number {
