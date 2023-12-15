@@ -12,27 +12,6 @@ function offsetsToSelection(offsets: [number, number] | undefined, doc: vscode.T
     return new vscode.Selection(anchor, active);
 }
 
-
-function selectAtCursor(text: string, cursorOffset: number, traverseParams: util.TraverseParams = {}): [number, number] | undefined {
-    let selStartOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, -1, traverseParams);
-    let selEndOffset = util.traverseUntilUnmatchedParen(text, cursorOffset, 1, traverseParams);
-    if (selEndOffset === undefined || selStartOffset === undefined) {
-        return undefined; // hi jam!
-    }
-
-    // when we include whitespace, it's assumed we also want to include a delim on one side (but not both sides)
-    if (traverseParams.includeWhitespace) {
-        if (util.DELIMS.includes(text[selEndOffset])) {
-            selEndOffset += 1;
-        } else if (util.DELIMS.includes(text[selStartOffset])) {
-            selStartOffset -= 1;
-        }
-    }
-    selStartOffset += 1; // want cursor to be placed to the *right* of the left boundary
-    // min/max business is to handle case when selecting pure whitespace
-    return [Math.min(selStartOffset, selEndOffset), Math.max(selStartOffset, selEndOffset)];
-}
-
 function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscode.Selection {
     const text = doc.getText();
     const currentStringType = util.getCurrentStringType(text, doc.offsetAt(sel.active));
@@ -45,7 +24,7 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
         for (let paramAttempt of paramAttempts) {
-            let maybeNewSel = offsetsToSelection(selectAtCursor(text, doc.offsetAt(sel.active), { ...paramAttempt, initialNestDepth }), doc);
+            let maybeNewSel = offsetsToSelection(util.selectAtCursor(text, doc.offsetAt(sel.active), { ...paramAttempt, initialNestDepth }), doc);
             if (maybeNewSel === undefined) {
                 return sel;
             }
@@ -69,7 +48,7 @@ function getArgsAt(doc: vscode.TextDocument, sel: vscode.Selection): Args | unde
     const traverseParams: util.TraverseParams = { currentStringType, includeWhitespace: true, skipDelims: Infinity };
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {
-        let maybeNewSelOffsets = selectAtCursor(text, searchStart, { ...traverseParams, initialNestDepth });
+        let maybeNewSelOffsets = util.selectAtCursor(text, searchStart, { ...traverseParams, initialNestDepth });
         if (maybeNewSelOffsets === undefined) {
             return undefined;
         }
