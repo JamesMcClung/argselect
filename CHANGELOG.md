@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.0
+
+- Fix https://github.com/JamesMcClung/argselect/issues/1
+
 ## v1.0.3
 
 - Link to GitHub issues in README.md
