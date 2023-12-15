@@ -41,7 +41,7 @@ export function getCurrentStringType(text: string, offset: number, dir?: -1 | 1)
         const stringTypeLeft = getCurrentStringType(text, offset, -1);
         const stringTypeRight = getCurrentStringType(text, offset, 1);
         if (stringTypeLeft !== stringTypeRight) {
-            throw Error(`idk what's up with this string: left=${stringTypeLeft}, right=${stringTypeRight}`);
+            throw Error(`argselect error: can't parse a string at offset=${offset} with leftQuote=${stringTypeLeft}, rightQuote=${stringTypeRight}`);
         }
         return stringTypeLeft;
     }
@@ -68,7 +68,7 @@ export function getCurrentStringType(text: string, offset: number, dir?: -1 | 1)
         }
 
         if (i < -5 || i > text.length + 5) {
-            throw Error(`loop: ${i}`);
+            throw Error(`argselect logic error: loop idx reached ${i} and probably would have gone on forever`);
         }
     }
 
