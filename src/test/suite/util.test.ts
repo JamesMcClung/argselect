@@ -216,4 +216,17 @@ suite('Util Test Suite', () => {
         assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`(123, 67)`, 8));
         assert.deepStrictEqual(undefined, util.selectAtCursor(String.raw`(123, 67)`, 9));
     });
+
+    test('selectAtCursor.string', () => {
+        assert.deepStrictEqual(undefined, util.selectAtCursor(String.raw`("2", 67)`, 0));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`("2", 67)`, 1));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`("2", 67)`, 2, { currentStringType: '"' }));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`("2", 67)`, 3, { currentStringType: '"' }));
+        assert.deepStrictEqual([1, 4], util.selectAtCursor(String.raw`("2", 67)`, 4));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`("2", 67)`, 5));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`("2", 67)`, 6));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`("2", 67)`, 7));
+        assert.deepStrictEqual([6, 8], util.selectAtCursor(String.raw`("2", 67)`, 8));
+        assert.deepStrictEqual(undefined, util.selectAtCursor(String.raw`("2", 67)`, 9));
+    });
 });
