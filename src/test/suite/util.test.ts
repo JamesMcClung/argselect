@@ -176,6 +176,34 @@ suite('Util Test Suite', () => {
         assert.strictEqual(10, util.traverseUntilUnmatchedParen(String.raw`(1, (5, 8))`, 10, 1));
         assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`(1, (5, 8))`, 11, 1));
     });
+    test('traverseUntilUnmatchedParen.string', () => {
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 0, -1));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 1, -1));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 2, -1));
+        assert.strictEqual(3, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 3, -1));
+        assert.strictEqual(3, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 4, -1));
+        assert.strictEqual(3, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 5, -1, { currentStringType: '"' }));
+        assert.strictEqual(3, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 6, -1, { currentStringType: '"' }));
+        assert.strictEqual(3, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 7, -1));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 8, -1));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 9, -1));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 10, -1));
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 11, -1));
+
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 0, 1));
+        assert.strictEqual(2, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 1, 1));
+        assert.strictEqual(2, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 2, 1));
+        assert.strictEqual(7, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 3, 1));
+        assert.strictEqual(7, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 4, 1));
+        assert.strictEqual(7, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 5, 1, { currentStringType: '"' }));
+        assert.strictEqual(7, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 6, 1, { currentStringType: '"' }));
+        assert.strictEqual(7, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 7, 1));
+        assert.strictEqual(10, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 8, 1));
+        assert.strictEqual(10, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 9, 1));
+        assert.strictEqual(10, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 10, 1));
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 11, 1));
+    });
+
     test('moveCursor', () => {
         assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 0, -1));
         assert.strictEqual(1, util.moveCursor(String.raw`(1, (5, 8))`, 1, -1));
