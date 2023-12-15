@@ -116,7 +116,7 @@ export function traverseUntilUnmatchedParen(
     let nDelimsSkipped = 0;
 
     if (params.currentStringType !== undefined) {
-        startingOffset = traverseUntilOutOfString(text, startingOffset, dir, params.currentStringType)!;
+        startingOffset = traverseUntilOutOfString(text, startingOffset, +1, params.currentStringType)!;
     }
 
     let boundaryOffset: number | undefined = undefined;
