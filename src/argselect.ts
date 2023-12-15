@@ -2,6 +2,17 @@ import * as vscode from 'vscode';
 import * as util from './util';
 import { Args } from './args';
 
+function offsetsToSelection(offsets: [number, number] | undefined, doc: vscode.TextDocument): vscode.Selection | undefined {
+    if (offsets === undefined) {
+        return undefined;
+    }
+
+    const anchor = doc.positionAt(offsets[0]);
+    const active = doc.positionAt(offsets[1]);
+    return new vscode.Selection(anchor, active);
+}
+
+
 function selectAtCursor(doc: vscode.TextDocument, cursorOffset: number, traverseParams: util.TraverseParams = {}): vscode.Selection | undefined {
     const text = doc.getText();
 
