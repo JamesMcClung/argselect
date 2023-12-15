@@ -142,7 +142,8 @@ export function traverseUntilUnmatchedParen(
             if (stringExit === undefined) {
                 throw Error("couldn't figure out this string");
             }
-            i = stringExit;
+            i = stringExit - dir;
+            continue;
         }
 
         if (!WHITESPACE.includes(char)) {
