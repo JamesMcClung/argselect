@@ -140,7 +140,7 @@ export function traverseUntilUnmatchedParen(
         } else if (QUOTES.includes(char)) {
             const stringExit = traverseUntilOutOfString(text, i + dir, dir, char);
             if (stringExit === undefined) {
-                throw Error("couldn't figure out this string");
+                return undefined;
             }
             i = stringExit - dir;
             continue;
