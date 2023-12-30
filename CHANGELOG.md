@@ -1,5 +1,11 @@
 # Change Log
 
+## v1.2.0
+
+- Fix https://github.com/JamesMcClung/argselect/issues/3
+- Fix https://github.com/JamesMcClung/argselect/issues/4
+- Fix https://github.com/JamesMcClung/argselect/issues/5
+
 ## v1.1.2
 
 - Improve error messages and suppress a particularly annoying one
