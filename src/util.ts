@@ -78,14 +78,12 @@ export function getCurrentStringType(text: string, offset: number, dir?: -1 | 1)
 export type TraverseParams = {
     currentStringType?: string | undefined,
     initialNestDepth?: number,
-    stopAtDelims?: boolean,
     skipDelims?: number,
     includeWhitespace?: boolean,
 };
 type TraverseParamsConcrete = {
     currentStringType: string | undefined,
     initialNestDepth: number,
-    stopAtDelims: boolean,
     skipDelims: number,
     includeWhitespace: boolean,
 };
@@ -94,7 +92,6 @@ function concretizeTraverseParams(params: TraverseParams | undefined): TraverseP
         currentStringType: undefined,
         initialNestDepth: 0,
         skipDelims: 0,
-        stopAtDelims: true,
         includeWhitespace: false,
         ...params
     };
@@ -130,7 +127,7 @@ export function traverseUntilUnmatchedParen(
                 break;
             }
             nestDepth--;
-        } else if (params.stopAtDelims && nestDepth === 0 && DELIMS.includes(char)) {
+        } else if (nestDepth === 0 && DELIMS.includes(char)) {
             if (nDelimsSkipped >= params.skipDelims) {
                 boundaryOffset = i;
                 break;
@@ -143,6 +140,7 @@ export function traverseUntilUnmatchedParen(
                 return undefined;
             }
             i = stringExit - dir;
+            lastNonSpace = i;
             continue;
         }
 
@@ -151,15 +149,13 @@ export function traverseUntilUnmatchedParen(
         }
     }
 
-    if (boundaryOffset !== undefined) {
-        if (params.includeWhitespace) {
-            return boundaryOffset;
-        }
-
-        if (lastNonSpace !== undefined) {
-            return lastNonSpace + dir; // add dir to return offset of the space
-        }
-
+    if (boundaryOffset === undefined) {
+        return undefined;
+    } else if (params.includeWhitespace) {
+        return boundaryOffset;
+    } else if (lastNonSpace !== undefined) {
+        return lastNonSpace + dir; // add dir to return offset of the space
+    } else {
         // try backtracking to find a nonspace; might even go past starting position
         for (let i = boundaryOffset - dir; i < text.length && i >= 0; i -= dir) {
             if (!WHITESPACE.includes(text[i])) {
@@ -167,8 +163,6 @@ export function traverseUntilUnmatchedParen(
             }
         }
     }
-
-    return undefined;
 }
 
 export function isInParens(text: string, offset: number): boolean {

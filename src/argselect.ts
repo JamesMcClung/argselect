@@ -18,8 +18,8 @@ function expandSelection(doc: vscode.TextDocument, sel: vscode.Selection): vscod
     const paramAttempts: util.TraverseParams[] = [
         { currentStringType },
         { currentStringType, includeWhitespace: true },
-        { currentStringType, stopAtDelims: false },
-        { currentStringType, includeWhitespace: true, stopAtDelims: false },
+        { currentStringType, skipDelims: Infinity },
+        { currentStringType, includeWhitespace: true, skipDelims: Infinity },
     ];
 
     for (let initialNestDepth = 0; ; initialNestDepth++) {

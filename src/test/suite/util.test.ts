@@ -203,6 +203,29 @@ suite('Util Test Suite', () => {
         assert.strictEqual(10, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 10, 1));
         assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`(1, "5", 9)`, 11, 1));
     });
+    test('traverseUntilUnmatchedParen.stringAndSkip', () => {
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 0, -1, { skipDelims: 1 }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 1, -1, { skipDelims: 1 }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 2, -1, { skipDelims: 1, currentStringType: '"' }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 3, -1, { skipDelims: 1, currentStringType: '"' }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 4, -1, { skipDelims: 1, currentStringType: '"' }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 5, -1, { skipDelims: 1 }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 6, -1, { skipDelims: 1 }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 7, -1, { skipDelims: 1 }));
+        assert.strictEqual(0, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 8, -1, { skipDelims: 1 }));
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 9, -1, { skipDelims: 1 }));
+
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 0, 1, { skipDelims: 1 }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 1, 1, { skipDelims: 1 }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 2, 1, { skipDelims: 1, currentStringType: '"' }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 3, 1, { skipDelims: 1, currentStringType: '"' }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 4, 1, { skipDelims: 1, currentStringType: '"' }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 5, 1, { skipDelims: 1 }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 6, 1, { skipDelims: 1 }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 7, 1, { skipDelims: 1 }));
+        assert.strictEqual(8, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 8, 1, { skipDelims: 1 }));
+        assert.strictEqual(undefined, util.traverseUntilUnmatchedParen(String.raw`("23", 7)`, 9, 1, { skipDelims: 1 }));
+    });
 
     test('moveCursor.nested', () => {
         assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 0, -1));
