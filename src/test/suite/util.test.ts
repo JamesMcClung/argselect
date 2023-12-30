@@ -231,6 +231,31 @@ suite('Util Test Suite', () => {
         assert.strictEqual(10, util.moveCursor(String.raw`(1, (5, 8))`, 10, 1));
         assert.strictEqual(undefined, util.moveCursor(String.raw`(1, (5, 8))`, 11, 1));
     });
+    test('moveCursor.string', () => {
+        assert.strictEqual(undefined, util.moveCursor(String.raw`("23", 78)`, 0, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`("23", 78)`, 1, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`("23", 78)`, 2, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`("23", 78)`, 3, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`("23", 78)`, 4, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`("23", 78)`, 5, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`("23", 78)`, 6, -1));
+        assert.strictEqual(1, util.moveCursor(String.raw`("23", 78)`, 7, -1));
+        assert.strictEqual(7, util.moveCursor(String.raw`("23", 78)`, 8, -1));
+        assert.strictEqual(7, util.moveCursor(String.raw`("23", 78)`, 9, -1));
+        assert.strictEqual(undefined, util.moveCursor(String.raw`("23", 78)`, 10, -1));
+
+        assert.strictEqual(undefined, util.moveCursor(String.raw`("23", 78)`, 0, 1));
+        assert.strictEqual(5, util.moveCursor(String.raw`("23", 78)`, 1, 1));
+        assert.strictEqual(5, util.moveCursor(String.raw`("23", 78)`, 2, 1));
+        assert.strictEqual(5, util.moveCursor(String.raw`("23", 78)`, 3, 1));
+        assert.strictEqual(5, util.moveCursor(String.raw`("23", 78)`, 4, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`("23", 78)`, 5, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`("23", 78)`, 6, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`("23", 78)`, 7, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`("23", 78)`, 8, 1));
+        assert.strictEqual(9, util.moveCursor(String.raw`("23", 78)`, 9, 1));
+        assert.strictEqual(undefined, util.moveCursor(String.raw`("23", 78)`, 10, 1));
+    });
 
     test('selectAtCursor.basic', () => {
         assert.deepStrictEqual(undefined, util.selectAtCursor(String.raw`(123, 67)`, 0));
