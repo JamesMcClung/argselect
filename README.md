@@ -36,6 +36,10 @@ See https://github.com/JamesMcClung/argselect/issues
 
 ## Release Notes
 
+### 1.2.0
+
+Fixed several bugs related to jumping across and within strings.
+
 ### 1.1.0
 
 Fixed a bug that caused each command to fail when the arguments contained a string.
