@@ -143,6 +143,7 @@ export function traverseUntilUnmatchedParen(
                 return undefined;
             }
             i = stringExit - dir;
+            lastNonSpace = i;
             continue;
         }
 
