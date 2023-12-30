@@ -78,14 +78,12 @@ export function getCurrentStringType(text: string, offset: number, dir?: -1 | 1)
 export type TraverseParams = {
     currentStringType?: string | undefined,
     initialNestDepth?: number,
-    stopAtDelims?: boolean,
     skipDelims?: number,
     includeWhitespace?: boolean,
 };
 type TraverseParamsConcrete = {
     currentStringType: string | undefined,
     initialNestDepth: number,
-    stopAtDelims: boolean,
     skipDelims: number,
     includeWhitespace: boolean,
 };
@@ -94,7 +92,6 @@ function concretizeTraverseParams(params: TraverseParams | undefined): TraverseP
         currentStringType: undefined,
         initialNestDepth: 0,
         skipDelims: 0,
-        stopAtDelims: true,
         includeWhitespace: false,
         ...params
     };
@@ -130,7 +127,7 @@ export function traverseUntilUnmatchedParen(
                 break;
             }
             nestDepth--;
-        } else if (params.stopAtDelims && nestDepth === 0 && DELIMS.includes(char)) {
+        } else if (nestDepth === 0 && DELIMS.includes(char)) {
             if (nDelimsSkipped >= params.skipDelims) {
                 boundaryOffset = i;
                 break;
