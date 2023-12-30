@@ -151,15 +151,13 @@ export function traverseUntilUnmatchedParen(
         }
     }
 
-    if (boundaryOffset !== undefined) {
-        if (params.includeWhitespace) {
-            return boundaryOffset;
-        }
-
-        if (lastNonSpace !== undefined) {
-            return lastNonSpace + dir; // add dir to return offset of the space
-        }
-
+    if (boundaryOffset === undefined) {
+        return undefined;
+    } else if (params.includeWhitespace) {
+        return boundaryOffset;
+    } else if (lastNonSpace !== undefined) {
+        return lastNonSpace + dir; // add dir to return offset of the space
+    } else {
         // try backtracking to find a nonspace; might even go past starting position
         for (let i = boundaryOffset - dir; i < text.length && i >= 0; i -= dir) {
             if (!WHITESPACE.includes(text[i])) {
@@ -167,8 +165,6 @@ export function traverseUntilUnmatchedParen(
             }
         }
     }
-
-    return undefined;
 }
 
 export function isInParens(text: string, offset: number): boolean {
