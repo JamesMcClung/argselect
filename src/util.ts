@@ -183,10 +183,11 @@ export function moveCursor(text: string, cursorOffset: number, dir: -1 | 1): num
         return undefined;
     }
 
-    let endOffset = traverseUntilUnmatchedParen(text, cursorOffset, dir)! - Math.min(0, dir);
+    const currentStringType = getCurrentStringType(text, cursorOffset);
+    let endOffset = traverseUntilUnmatchedParen(text, cursorOffset, dir, { currentStringType })! - Math.min(0, dir);
 
     if (dir === 1 && endOffset <= cursorOffset || dir === -1 && endOffset >= cursorOffset) {
-        endOffset = traverseUntilUnmatchedParen(text, cursorOffset, dir, { skipDelims: 1 })! - Math.min(0, dir);
+        endOffset = traverseUntilUnmatchedParen(text, cursorOffset, dir, { skipDelims: 1, currentStringType })! - Math.min(0, dir);
     }
 
     return endOffset;
