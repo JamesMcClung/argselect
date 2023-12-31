@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.2.1
+
+- Change "-" to "+" in keybinding descriptions in readme
+
 ## v1.2.0
 
 - Fix https://github.com/JamesMcClung/argselect/issues/3
