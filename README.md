@@ -5,14 +5,14 @@ A VS Code extension for selecting and manipulating arguments (or parameters) of 
 ## Added Commands
 
 ### `argselect.selectArg`
-_default keybinding: `ctrl-up`_
+_default keybinding: `ctrl+up`_
 
 This command expands the current selection to include increasingly more of the current argument:
 
 ![feature X](images/ctrl-up.gif)
 
 ### `argselect.moveArgLeft` and `argselect.moveArgRight`
-_default keybindings: `ctrl-left`, `ctrl-right`_
+_default keybindings: `ctrl+left`, `ctrl+right`_
 
 If nothing is selected, these commands move the cursor one argument to the left or right:
 
