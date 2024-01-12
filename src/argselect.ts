@@ -73,7 +73,7 @@ export function selectArg() {
     editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
 }
 
-function getSelectionAfterJump(doc: vscode.TextDocument, startSelection: vscode.Selection, dir: -1 | 1): vscode.Selection {
+function getSelectionAfterJump(doc: vscode.TextDocument, startSelection: vscode.Selection, dir: -1 | 1, select: boolean): vscode.Selection {
     const newCursorOffset = util.getCursorOffsetAfterJump(doc.getText(), doc.offsetAt(startSelection.active), dir);
     if (newCursorOffset === undefined) {
         return startSelection;
@@ -103,30 +103,30 @@ function getSelectionAfterMove(editor: vscode.TextEditor, sel: vscode.Selection,
     }
 }
 
-function moveOrJumpArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
+function moveOrJumpArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1, select: boolean): vscode.Selection {
     if (sel.isEmpty) {
-        return getSelectionAfterJump(editor.document, sel, dir);
+        return getSelectionAfterJump(editor.document, sel, dir, select);
     } else {
         return getSelectionAfterMove(editor, sel, dir);
     }
 }
 
-export function moveOrJumpArgsLeft() {
+export function moveOrJumpArgsLeft(select: boolean) {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, -1));
+    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, -1, select));
 }
 
-export function moveOrJumpArgsRight() {
+export function moveOrJumpArgsRight(select: boolean) {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, 1));
+    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, 1, select));
 }
