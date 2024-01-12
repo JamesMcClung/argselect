@@ -82,7 +82,7 @@ function getSelectionAfterJump(doc: vscode.TextDocument, startSelection: vscode.
     return new vscode.Selection(newPos, newPos);
 }
 
-function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
+function moveOrJumpArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
     const doc = editor.document;
 
     if (sel.isEmpty) {
@@ -107,22 +107,22 @@ function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1):
     }
 }
 
-export function moveArgLeft() {
+export function moveOrJumpArgsLeft() {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => moveArg(editor, sel, -1));
+    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, -1));
 }
 
-export function moveArgRight() {
+export function moveOrJumpArgsRight() {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => moveArg(editor, sel, 1));
+    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, 1));
 }
