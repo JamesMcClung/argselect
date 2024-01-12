@@ -73,16 +73,20 @@ export function selectArg() {
     editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
 }
 
+function getSelectionAfterJump(doc: vscode.TextDocument, startSelection: vscode.Selection, dir: -1 | 1): vscode.Selection {
+    const newCursorOffset = util.getCursorOffsetAfterJump(doc.getText(), doc.offsetAt(startSelection.active), dir);
+    if (newCursorOffset === undefined) {
+        return startSelection;
+    }
+    const newPos = doc.positionAt(newCursorOffset);
+    return new vscode.Selection(newPos, newPos);
+}
+
 function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
     const doc = editor.document;
 
     if (sel.isEmpty) {
-        const newCursorOffset = util.getCursorOffsetAfterJump(doc.getText(), doc.offsetAt(sel.active), dir);
-        if (newCursorOffset === undefined) {
-            return sel;
-        }
-        const newPos = doc.positionAt(newCursorOffset);
-        return new vscode.Selection(newPos, newPos);
+        return getSelectionAfterJump(doc, sel, dir);
     }
 
     const args = getArgsAt(doc, sel);
