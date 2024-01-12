@@ -77,7 +77,7 @@ function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1):
     const doc = editor.document;
 
     if (sel.isEmpty) {
-        const newCursorOffset = util.moveCursor(doc.getText(), doc.offsetAt(sel.active), dir);
+        const newCursorOffset = util.getCursorOffsetAfterJump(doc.getText(), doc.offsetAt(sel.active), dir);
         if (newCursorOffset === undefined) {
             return sel;
         }

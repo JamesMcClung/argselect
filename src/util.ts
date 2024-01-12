@@ -172,16 +172,16 @@ export function isInParens(text: string, offset: number): boolean {
     return parensLeft !== undefined && parensRight !== undefined;
 }
 
-export function moveCursor(text: string, cursorOffset: number, dir: -1 | 1): number | undefined {
-    if (!isInParens(text, cursorOffset)) {
+export function getCursorOffsetAfterJump(text: string, startCursorOffset: number, dir: -1 | 1): number | undefined {
+    if (!isInParens(text, startCursorOffset)) {
         return undefined;
     }
 
-    const currentStringType = getCurrentStringType(text, cursorOffset);
-    let endOffset = traverseUntilUnmatchedParen(text, cursorOffset, dir, { currentStringType })! - Math.min(0, dir);
+    const currentStringType = getCurrentStringType(text, startCursorOffset);
+    let endOffset = traverseUntilUnmatchedParen(text, startCursorOffset, dir, { currentStringType })! - Math.min(0, dir);
 
-    if (dir === 1 && endOffset <= cursorOffset || dir === -1 && endOffset >= cursorOffset) {
-        endOffset = traverseUntilUnmatchedParen(text, cursorOffset, dir, { skipDelims: 1, currentStringType })! - Math.min(0, dir);
+    if (dir === 1 && endOffset <= startCursorOffset || dir === -1 && endOffset >= startCursorOffset) {
+        endOffset = traverseUntilUnmatchedParen(text, startCursorOffset, dir, { skipDelims: 1, currentStringType })! - Math.min(0, dir);
     }
 
     return endOffset;
