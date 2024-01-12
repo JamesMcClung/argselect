@@ -1,5 +1,11 @@
 # Change Log
 
+## v2.0.0: Shift Select
+
+- New commands: `argselect.selectArgLeft` and `argselect.selectArgRight`
+    - Default keybindings: `shift+ctrl+left` and `shift+ctrl+right`, respectively
+    - Jumps cursor left or right 1 argument, highlighting intermediate text
+
 ## v1.2.1
 
 - Change "-" to "+" in keybinding descriptions in readme
