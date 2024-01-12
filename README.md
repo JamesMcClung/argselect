@@ -22,6 +22,11 @@ However, if parts of one or more arguments are selected, these commands move the
 
 ![feature X](images/ctrl-lr-sel.gif)
 
+### `argselect.selectArgLeft` and `argselect.selectArgRight`
+_default keybindings: `shift+ctrl+left`, `shift+ctrl+right`_
+
+These commands move the cursor one argument to the left or right, highlighting text along the way.
+
 ## Added Settings
 
 This extension does not currently add any settings.
@@ -35,6 +40,10 @@ This extension has no requirements.
 See https://github.com/JamesMcClung/argselect/issues
 
 ## Release Notes
+
+### 2.0.0
+
+Added `argselect.selectArgLeft` and `argselect.selectArgRight` commands.
 
 ### 1.2.0
 

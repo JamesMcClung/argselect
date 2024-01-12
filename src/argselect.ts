@@ -73,17 +73,21 @@ export function selectArg() {
     editor.selections = editor.selections.map(sel => expandSelection(editor.document, sel));
 }
 
-function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
-    const doc = editor.document;
-
-    if (sel.isEmpty) {
-        const newCursorOffset = util.moveCursor(doc.getText(), doc.offsetAt(sel.active), dir);
-        if (newCursorOffset === undefined) {
-            return sel;
-        }
-        const newPos = doc.positionAt(newCursorOffset);
+function getSelectionAfterJump(doc: vscode.TextDocument, startSelection: vscode.Selection, dir: -1 | 1, select: boolean): vscode.Selection {
+    const newCursorOffset = util.getCursorOffsetAfterJump(doc.getText(), doc.offsetAt(startSelection.active), dir);
+    if (newCursorOffset === undefined) {
+        return startSelection;
+    }
+    const newPos = doc.positionAt(newCursorOffset);
+    if (select) {
+        return new vscode.Selection(startSelection.anchor, newPos);
+    } else {
         return new vscode.Selection(newPos, newPos);
     }
+}
+
+function getSelectionAfterMove(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1): vscode.Selection {
+    const doc = editor.document;
 
     const args = getArgsAt(doc, sel);
     if (args === undefined) {
@@ -103,22 +107,30 @@ function moveArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1):
     }
 }
 
-export function moveArgLeft() {
-    const editor = vscode.window.activeTextEditor;
-
-    if (!editor) {
-        return;
+function moveOrJumpArg(editor: vscode.TextEditor, sel: vscode.Selection, dir: -1 | 1, select: boolean): vscode.Selection {
+    if (sel.isEmpty || select) {
+        return getSelectionAfterJump(editor.document, sel, dir, select);
+    } else {
+        return getSelectionAfterMove(editor, sel, dir);
     }
-
-    editor.selections = editor.selections.map(sel => moveArg(editor, sel, -1));
 }
 
-export function moveArgRight() {
+export function moveOrJumpArgsLeft(select: boolean) {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
         return;
     }
 
-    editor.selections = editor.selections.map(sel => moveArg(editor, sel, 1));
+    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, -1, select));
+}
+
+export function moveOrJumpArgsRight(select: boolean) {
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+        return;
+    }
+
+    editor.selections = editor.selections.map(sel => moveOrJumpArg(editor, sel, 1, select));
 }
