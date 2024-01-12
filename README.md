@@ -41,6 +41,10 @@ See https://github.com/JamesMcClung/argselect/issues
 
 ## Release Notes
 
+### 2.0.0
+
+Added `argselect.selectArgLeft` and `argselect.selectArgRight` commands.
+
 ### 1.2.0
 
 Fixed several bugs related to jumping across and within strings.
