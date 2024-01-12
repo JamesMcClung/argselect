@@ -36,6 +36,16 @@
         "command": "argselect.moveArgRight",
         "title": "Move Argument Right",
         "category": "ArgSelect"
+      },
+      {
+        "command": "argselect.selectArgLeft",
+        "title": "Select Argument Left",
+        "category": "ArgSelect"
+      },
+      {
+        "command": "argselect.selectArgRight",
+        "title": "Select Argument Right",
+        "category": "ArgSelect"
       }
     ],
     "keybindings": [
@@ -52,6 +62,16 @@
       {
         "command": "argselect.moveArgRight",
         "key": "ctrl+right",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "argselect.selectArgLeft",
+        "key": "shift+ctrl+left",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "argselect.selectArgRight",
+        "key": "shift+ctrl+right",
         "when": "editorTextFocus"
       }
     ]
