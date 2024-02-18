@@ -135,7 +135,7 @@ export function traverseUntilUnmatchedParen(
                 nDelimsSkipped++;
             }
         } else if (QUOTES.includes(char)) {
-            const stringExit = traverseUntilOutOfString(text, i + dir, dir, char);
+            const stringExit = traverseUntilOutOfString(text, i, dir, char);
             if (stringExit === undefined) {
                 return undefined;
             }
