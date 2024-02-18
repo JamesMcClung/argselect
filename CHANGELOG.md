@@ -1,5 +1,9 @@
 # Change Log
 
+## v2.1.0
+
+- Fix https://github.com/JamesMcClung/argselect/issues/8
+
 ## v2.0.0: Shift Select
 
 - New commands: `argselect.selectArgLeft` and `argselect.selectArgRight`
