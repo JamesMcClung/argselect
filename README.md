@@ -41,6 +41,10 @@ See https://github.com/JamesMcClung/argselect/issues
 
 ## Release Notes
 
+### 2.1.0
+
+Fixed a bug that caused commands to fail when an empty string was to the left of the cursor.
+
 ### 2.0.0
 
 Added `argselect.selectArgLeft` and `argselect.selectArgRight` commands.
